@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <modules>
-
         <module>ape-common</module>
+        <module>ape-article</module>
     </modules>
 
     <parent>
@@ -51,7 +51,7 @@
 
     <dependencyManagement>
         <dependencies>
-            <!--spring boot 2.4.5-->
+            <!--spring boot 2.4.3-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
