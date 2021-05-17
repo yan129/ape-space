@@ -1,9 +1,11 @@
 package com.ape.common.model;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -13,7 +15,7 @@ import java.util.Date;
  * @date: 2021/5/13
  */
 @Data
-public class BaseEntity {
+public class BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "ID")
     @TableId(value = "id", type = IdType.ASSIGN_UUID)

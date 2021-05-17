@@ -1,0 +1,23 @@
+-- 文章表
+DROP TABLE IF EXISTS `article`;
+CREATE TABLE `article` (
+    `id` CHAR(32) NOT NULL COMMENT '文章ID',
+    `uid` CHAR(32) NOT NULL COMMENT '用户ID',
+    `tid` CHAR(32) DEFAULT NULL COMMENT '主题ID',
+    `title` VARCHAR(64) NOT NULL COMMENT '标题',
+    `summary` VARCHAR(255) DEFAULT NULL COMMENT '概要',
+    `picture` VARCHAR(255) DEFAULT NULL COMMENT '封面图',
+    `content` MEDIUMTEXT DEFAULT NULL COMMENT '内容',
+    `views` BIGINT(20) DEFAULT '0' COMMENT '浏览数',
+    `liked` BIGINT(20) DEFAULT '0' COMMENT '点赞数',
+    `disliked` BIGINT(20) DEFAULT '0' COMMENT '踩点击数',
+    `is_reward` TINYINT(1) DEFAULT '0' COMMENT '是否开启打赏，默认1开启，0不开启',
+    `is_comment` TINYINT(1) DEFAULT '1' COMMENT '是否开启评论功能，默认1开启，0不开启',
+    `is_publish` TINYINT(1) DEFAULT '0' COMMENT '1默认发布，0存入草稿箱',
+    `is_top` TINYINT(1) DEFAULT '0' COMMENT '默认1置顶，0不置顶',
+    `is_deleted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除 1（true）已删除， 0（false）未删除',
+    `gmt_created` DATETIME NOT NULL COMMENT '创建时间',
+    `gmt_modified` DATETIME NOT NULL COMMENT '修改时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`uid`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文章表'

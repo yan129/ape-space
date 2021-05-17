@@ -1,19 +1,19 @@
-package com.ape.article;
+package com.ape.eureka;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 
 /**
  * Created by IntelliJ IDEA.
  *
  * @author: Yan
- * @date: 2021/5/14
+ * @date: 2021/5/15
  */
 @SpringBootApplication
-@ComponentScan(basePackages = "com.ape")
-public class ArticleApplication {
+@EnableEurekaServer
+public class Eureka7002Application {
     public static void main(String[] args) {
-        SpringApplication.run(ArticleApplication.class, args);
+        SpringApplication.run(Eureka7002Application.class, args);
     }
 }

@@ -36,4 +36,8 @@ public class ResultVO<T> implements Serializable {
     public static <T> ResultVO<T> ERROR(){
         return new ResultVO<>(Boolean.FALSE, ResponseCode.ERROR.getCode(), ResponseCode.ERROR.getMsg(), null);
     }
+
+    public static <T> ResultVO<T> ERROR(T data){
+        return new ResultVO<>(Boolean.FALSE, ResponseCode.ERROR.getCode(), ResponseCode.ERROR.getMsg(), data);
+    }
 }
