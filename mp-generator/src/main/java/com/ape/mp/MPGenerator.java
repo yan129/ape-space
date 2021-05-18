@@ -155,6 +155,6 @@ public class MPGenerator {
     }
 
     public static void main(String[] args) {
-        MPGenerator.generator("ape-article", "article", "article", "");
+        MPGenerator.generator("ape-article", "article", "theme", "");
     }
 }
