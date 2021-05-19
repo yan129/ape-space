@@ -10,38 +10,30 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import org.hibernate.validator.constraints.Length;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * <p>
- * 专题表
+ * 文章标签关联表
  * </p>
  *
  * @author Yan
- * @since 2021-05-18
+ * @since 2021-05-19
  */
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@TableName("theme")
-@ApiModel(value="ThemeDO对象", description="专题表")
-public class ThemeDO extends BaseEntity {
+@TableName("article_label")
+@ApiModel(value="ArticleLabelDO对象", description="文章标签关联表")
+public class ArticleLabelDO extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "用户ID")
-    private String uid;
+    @ApiModelProperty(value = "文章ID")
+    private String aid;
 
-    @ApiModelProperty(value = "专题名称")
-    @NotBlank(message = "专题名称不能为空")
-    @Length(max = 16, message = "专题名称不能超过16个字符")
-    private String name;
-
-    @ApiModelProperty(value = "专题封面图")
-    private String picture;
+    @ApiModelProperty(value = "标签ID")
+    private String lid;
 
 
 }

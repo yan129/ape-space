@@ -19,7 +19,8 @@ CREATE TABLE `article` (
     `gmt_created` DATETIME NOT NULL COMMENT '创建时间',
     `gmt_modified` DATETIME NOT NULL COMMENT '修改时间',
     PRIMARY KEY (`id`),
-    KEY `idx_user_id` (`uid`)
+    KEY `idx_user_id` (`uid`),
+    KEY `idx_theme_id` (`tid`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文章表'
 
 -- 专题表
@@ -35,3 +36,33 @@ CREATE TABLE `theme`(
     PRIMARY KEY (`id`),
     KEY `idx_user_id` (`uid`)
 )ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='专题表';
+
+-- 标签表
+DROP TABLE IF EXISTS `label`;
+CREATE TABLE `label`(
+    `id` CHAR(32) NOT NULL COMMENT '标签ID',
+    `uid` CHAR(32) NOT NULL COMMENT '用户ID',
+    `name` VARCHAR(32) DEFAULT NULL COMMENT '标签名称',
+    `is_deleted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除 1（true）已删除， 0（false）未删除',
+    `gmt_created` DATETIME NOT NULL COMMENT '创建时间',
+    `gmt_modified` DATETIME NOT NULL COMMENT '修改时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`uid`)
+)ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='标签表';
+
+-- 文章标签关联表，多对多
+DROP TABLE IF EXISTS `article_label`;
+CREATE TABLE `article_label`(
+    `id` CHAR(32) NOT NULL COMMENT '关联ID',
+    `aid` CHAR(32) NOT NULL COMMENT '文章ID',
+    `lid` CHAR(32) NOT NULL COMMENT '标签ID',
+    `is_deleted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除 1（true）已删除， 0（false）未删除',
+    `gmt_created` DATETIME NOT NULL COMMENT '创建时间',
+    `gmt_modified` DATETIME NOT NULL COMMENT '修改时间',
+    PRIMARY KEY (`id`)
+)ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文章标签关联表';
+
+
+
+
+

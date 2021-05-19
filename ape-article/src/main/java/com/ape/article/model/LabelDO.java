@@ -16,32 +16,29 @@ import javax.validation.constraints.NotBlank;
 
 /**
  * <p>
- * 专题表
+ * 标签表
  * </p>
  *
  * @author Yan
- * @since 2021-05-18
+ * @since 2021-05-19
  */
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@TableName("theme")
-@ApiModel(value="ThemeDO对象", description="专题表")
-public class ThemeDO extends BaseEntity {
+@TableName("label")
+@ApiModel(value="LabelDO对象", description="标签表")
+public class LabelDO extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "用户ID")
     private String uid;
 
-    @ApiModelProperty(value = "专题名称")
-    @NotBlank(message = "专题名称不能为空")
-    @Length(max = 16, message = "专题名称不能超过16个字符")
+    @ApiModelProperty(value = "标签名称")
+    @NotBlank(message = "标签名称不能为空")
+    @Length(max = 16, message = "标签名称不能超过16个字符")
     private String name;
-
-    @ApiModelProperty(value = "专题封面图")
-    private String picture;
 
 
 }
