@@ -1,0 +1,41 @@
+server:
+  port: 8001
+
+eureka:
+  instance:
+    hostname: 127.0.0.1
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:7001/eureka,http://${eureka.instance.hostname}:7002/eureka
+
+spring:
+  application:
+    name: ape-gateway8001
+  cloud:
+    gateway:
+      globalcors:
+        # 全局允许跨域访问
+        cors-configurations:
+          '[/**]':
+            allow-credentials: true
+            allowed-origins: "*"
+            allowed-headers: "*"
+            allowed-methods:
+              - OPTIONS
+              - GET
+              - POST
+              - PUT
+              - DELETE
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: ape-article
+          uri: lb://ape-article
+          predicates:
+            - Path=/ape-space/article/**
+

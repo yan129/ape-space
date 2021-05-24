@@ -29,6 +29,13 @@ import javax.validation.Valid;
 @RequestMapping("/article")
 public class ArticleController {
 
+
+    @GetMapping("/hello")
+    @ResponseBody
+    public String hello(){
+        return "hello spring";
+    }
+
     @Autowired
     private ArticleService articleService;
 

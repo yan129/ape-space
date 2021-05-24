@@ -52,6 +52,6 @@ feign:
   hystrix:
     enabled: true
 
-logging:
-  file:
-    path:
+#logging:
+#  file:
+#    path:

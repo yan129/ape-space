@@ -1,21 +1,20 @@
-package com.ape.article;
+package com.ape.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
-import org.springframework.context.annotation.ComponentScan;
 
 /**
  * Created by IntelliJ IDEA.
  *
  * @author: Yan
- * @date: 2021/5/14
+ * @date: 2021/5/21
  */
-@SpringBootApplication
-@ComponentScan(basePackages = "com.ape")
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableEurekaClient
-public class ArticleApplication {
+public class Gateway8001Application {
     public static void main(String[] args) {
-        SpringApplication.run(ArticleApplication.class, args);
+        SpringApplication.run(Gateway8001Application.class, args);
     }
 }
