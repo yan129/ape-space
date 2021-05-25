@@ -12,7 +12,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public enum ResponseCode {
 
     SUCCESS(200, "操作成功"),
-    ERROR(400, "操作失败");
+    ERROR(400, "操作失败"),
+    REPEAT_OPERATION(1000, "请勿重复操作！");
 
     private Integer code;
     private String msg;

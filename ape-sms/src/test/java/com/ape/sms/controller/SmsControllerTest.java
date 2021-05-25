@@ -1,20 +1,23 @@
 package com.ape.sms.controller;
 
+import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+
+import java.util.Map;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,28 +27,24 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @Slf4j
 @ExtendWith(SpringExtension.class)
-@WebAppConfiguration
+@AutoConfigureMockMvc
+@SpringBootTest
 public class SmsControllerTest{
 
-    private MockMvc mockMvc;
-
     @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    /**
-     * 在每个测试方法执行之前都初始化MockMvc对象
-     */
-    @BeforeEach
-    public void setupMockMvc(){
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    }
+    private MockMvc mockMvc;
 
     @Test
     @DisplayName("短信发送接口测试")
     public void send() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/sms/hello")
-               .contentType(MediaType.APPLICATION_JSON))
-               .andExpect(MockMvcResultMatchers.status().isOk())
-               .andDo(MockMvcResultHandlers.print());
+        MvcResult mvcResult = mockMvc.perform(post("/sms/send/4231134134")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+        // 设置编码，防止中文乱码
+        mvcResult.getResponse().setCharacterEncoding("UTF-8");
+        String data = mvcResult.getResponse().getContentAsString();
+        Map map = JSONUtil.toBean(data, Map.class);
+        Assertions.assertFalse(((Boolean) map.get("success")));
     }
 }

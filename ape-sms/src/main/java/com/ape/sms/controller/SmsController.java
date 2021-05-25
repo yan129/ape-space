@@ -1,16 +1,17 @@
 package com.ape.sms.controller;
 
+import com.ape.common.model.ResponseCode;
 import com.ape.common.model.ResultVO;
+import com.ape.common.utils.CommonUtil;
+import com.ape.sms.constant.SmsConstant;
 import com.ape.sms.service.SmsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,16 +27,28 @@ public class SmsController {
 
     @Autowired
     private SmsService smsService;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @ApiOperation(value = "发送短信", notes = "发送短信")
-    @PostMapping("/{telephone}")
+    @PostMapping("/send/{telephone}")
     public ResultVO<String> send(@ApiParam("手机号码") @PathVariable("telephone") String telephone){
+        boolean telRegex = CommonUtil.TelephoneRegex(telephone);
+        if (!telRegex){
+            return ResultVO.ERROR(SmsConstant.PHONE_CORRECT);
+        }
 
-        return ResultVO.OK();
+        // 判断缓存中key是否过期
+        if (stringRedisTemplate.hasKey(SmsConstant.PREFIX + telephone.trim())){
+            return ResultVO.ERROR(ResponseCode.REPEAT_OPERATION.getMsg());
+        }
+
+        boolean send = smsService.send(telephone);
+        return send ? ResultVO.OK(SmsConstant.GET_CODE) : ResultVO.ERROR(SmsConstant.SERVICE_ERROR);
     }
 
     @ApiOperation(value = "发送短信", notes = "发送短信")
-    @PostMapping("/hello")
+    @GetMapping("/hello")
     public ResultVO<String> hello(){
 
         return ResultVO.OK();
