@@ -21,7 +21,7 @@ CREATE TABLE `article` (
     PRIMARY KEY (`id`),
     KEY `idx_user_id` (`uid`),
     KEY `idx_theme_id` (`tid`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文章表'
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文章表';
 
 -- 专题表
 DROP TABLE IF EXISTS `theme`;
@@ -62,6 +62,34 @@ CREATE TABLE `article_label`(
     PRIMARY KEY (`id`)
 )ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文章标签关联表';
 
+-- 文章收藏表
+drop table if exists `favorites`;
+create table `favorites`(
+    `id` CHAR(32) NOT NULL COMMENT 'ID',
+    `uid` CHAR(32) NOT NULL COMMENT '用户ID',
+    `aid` CHAR(32) NOT NULL COMMENT '文章ID',
+    `is_deleted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除 1（true）已删除， 0（false）未删除',
+    `gmt_created` DATETIME NOT NULL COMMENT '创建时间',
+    `gmt_modified` DATETIME NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`uid`),
+    KEY `idx_article_id` (`aid`),
+    UNIQUE KEY `aid` (`aid`)
+)ENGINE=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文章收藏表';
+
+-- 用户关注表
+DROP TABLE IF EXISTS `follow`;
+CREATE TABLE `follow`(
+    `id` CHAR(32) NOT NULL COMMENT 'ID',
+    `current_uid` CHAR(32) NOT NULL COMMENT '当前用户ID',
+    `followed_uid` CHAR(32) NOT NULL COMMENT '被关注用户ID',
+    `is_deleted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除 1（true）已删除， 0（false）未删除',
+    `gmt_created` DATETIME NOT NULL COMMENT '创建时间',
+    `gmt_modified` DATETIME NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `followed_uid` (`followed_uid`),
+    KEY `idx_current_uid` (`current_uid`)
+)ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户关注表';
 
 
 

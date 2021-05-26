@@ -35,7 +35,7 @@ spring:
           lower-case-service-id: true
       routes:
         - id: ape-article
-          uri: lb://ape-article
+          uri: lb://ape-sms
           predicates:
-            - Path=/ape-space/article/**
+            - Path=/ape-space/sms/**
 
