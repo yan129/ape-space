@@ -29,13 +29,6 @@ import javax.validation.Valid;
 @RequestMapping("/article")
 public class ArticleController {
 
-
-    @GetMapping("/hello")
-    @ResponseBody
-    public String hello(){
-        return "hello spring";
-    }
-
     @Autowired
     private ArticleService articleService;
 
@@ -92,4 +85,8 @@ public class ArticleController {
         wrapper.eq("uid", uid);
         return wrapper;
     }
+
+//    @ApiOperation(value = "统计文章发布总数", notes = "统计文章发布总数")
+//    @GetMapping("/count")
+//    public ResultVO<Integer>
 }

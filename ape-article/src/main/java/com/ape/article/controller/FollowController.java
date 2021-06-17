@@ -4,7 +4,6 @@ package com.ape.article.controller;
 import com.ape.article.model.FollowDO;
 import com.ape.article.service.FollowService;
 import com.ape.common.model.ResultVO;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -55,12 +54,10 @@ public class FollowController {
         return ResultVO.OK(follows);
     }
 
-    @ApiOperation(value = "统计关注用户总数", notes = "统计关注用户总数")
+    @ApiOperation(value = "统计关注用户总数和粉丝数量", notes = "统计关注用户总数和粉丝数量")
     @GetMapping("/count")
-    public ResultVO<Integer> countFollowByUid(@ApiParam("用户ID") @RequestParam("uid") String uid) {
-        QueryWrapper<FollowDO> wrapper = new QueryWrapper<>();
-        wrapper.eq("current_uid", uid);
-        int count = followService.count(wrapper);
-        return ResultVO.OK(count);
+    public ResultVO<Map<String, Object>> countFollowByUid(@ApiParam("用户ID") @RequestParam("uid") String uid) {
+        Map<String, Object> result = followService.countFollowAndFans(uid);
+        return ResultVO.OK(result);
     }
 }

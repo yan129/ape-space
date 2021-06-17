@@ -155,6 +155,6 @@ public class MPGenerator {
     }
 
     public static void main(String[] args) {
-        MPGenerator.generator("ape-article", "article", "follow", "");
+        MPGenerator.generator("ape-user", "user", "sys_user_role", "sys_");
     }
 }

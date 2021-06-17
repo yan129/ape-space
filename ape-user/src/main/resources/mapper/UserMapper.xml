@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ape.user.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ape.user.model.UserDO">
+        <result column="id" property="id" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="gmt_created" property="gmtCreated" />
+        <result column="gmt_modified" property="gmtModified" />
+        <result column="nickname" property="nickname" />
+        <result column="username" property="username" />
+        <result column="password" property="password" />
+        <result column="avatar" property="avatar" />
+        <result column="remark" property="remark" />
+        <result column="profile" property="profile" />
+        <result column="gender" property="gender" />
+        <result column="available" property="available" />
+        <result column="not_expired" property="notExpired" />
+        <result column="account_not_locked" property="accountNotLocked" />
+        <result column="credentials_not_expired" property="credentialsNotExpired" />
+        <result column="last_login_time" property="lastLoginTime" />
+    </resultMap>
+
+</mapper>

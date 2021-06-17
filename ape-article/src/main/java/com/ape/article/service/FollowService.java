@@ -24,4 +24,11 @@ public interface FollowService extends IService<FollowDO> {
      * @return
      */
     List<Map<String, Object>> searchAllFollowByUid(long pageNum, long pageSize, String uid);
+
+    /**
+     * 统计关注用户总数和粉丝数量
+     * @param uid
+     * @return
+     */
+    Map<String, Object> countFollowAndFans(String uid);
 }

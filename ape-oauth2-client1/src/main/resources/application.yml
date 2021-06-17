@@ -1,0 +1,15 @@
+server:
+  port: 9531
+
+auth-server: http://localhost:9526/ape-space
+
+security:
+  oauth2:
+    client:
+      client-id: ape
+      client-secret: ape
+      user-authorization-uri: ${auth-server}/oauth/authorize
+      access-token-uri: ${auth-server}/oauth/token
+    resource:
+      jwk:
+        key-set-uri: ${auth-server}/oauth/token_key

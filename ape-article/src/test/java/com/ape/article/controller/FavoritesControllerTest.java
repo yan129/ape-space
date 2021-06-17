@@ -1,6 +1,5 @@
 package com.ape.article.controller;
 
-import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,12 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -23,11 +22,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  *
  * @author: Yan
  * @date: 2021/5/26
+ * 注意：@ActiveProfiles("test") -> 这里使用了test测试文件，排除druid中web-stat-filter的影响
  */
 @Slf4j
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class FavoritesControllerTest {
 
     @Autowired
@@ -44,6 +45,6 @@ public class FavoritesControllerTest {
                 .andReturn();
         mvcResult.getResponse().setCharacterEncoding("UTF-8");
         String data = mvcResult.getResponse().getContentAsString();
-        log.info(data);
+        log.info(data + "==============================");
     }
 }

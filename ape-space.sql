@@ -91,6 +91,55 @@ CREATE TABLE `follow`(
     KEY `idx_current_uid` (`current_uid`)
 )ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户关注表';
 
+-- 用户表
+DROP TABLE IF EXISTS `sys_user`;
+CREATE TABLE `sys_user`(
+    `id` CHAR(32) NOT NULL COMMENT '用户ID',
+    `nickname` VARCHAR(32) DEFAULT NULL COMMENT '昵称',
+    `username` VARCHAR(32) NOT NULL COMMENT '用户名',
+    `password` VARCHAR(255) NOT NULL COMMENT '密码',
+    `avatar` VARCHAR(255) DEFAULT NULL COMMENT '头像',
+    `remark` VARCHAR(64) DEFAULT NULL COMMENT '个性签名',
+    `profile` VARCHAR(100) DEFAULT NULL COMMENT '个人简介',
+    `gender` TINYINT(1) DEFAULT '1' COMMENT '性别，默认 1 为男，0 为女',
+    `available` TINYINT(1) DEFAULT '1' COMMENT '账号是否可用，默认 1 为可用，0 不可用',
+    `not_expired` TINYINT(1) DEFAULT '1' COMMENT '账号是否过期，默认 1 为不过期，0 为过期',
+    `account_not_locked` TINYINT(1) DEFAULT '1' COMMENT '账号是否锁定，默认 1 为不锁定，0 为锁定',
+    `credentials_not_expired` TINYINT(1) DEFAULT '1' COMMENT '证书（密码）是否过期，默认 1 为不过期，0 为过期',
+    `last_login_time` DATETIME DEFAULT NULL COMMENT '上一次登录时间',
+    `is_deleted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除 1（true）已删除， 0（false）未删除',
+    `gmt_created` DATETIME NOT NULL COMMENT '创建时间',
+    `gmt_modified` DATETIME NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    key `idx_username` (`username`)
+)ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户表';
 
+-- 角色表
+CREATE TABLE `sys_role`(
+    `id` CHAR(32) NOT NULL COMMENT '角色ID',
+    `role_name` VARCHAR(32) NOT NULL COMMENT '角色名',
+    `role_description` VARCHAR(128) NOT NULL COMMENT '角色说明',
+    `is_deleted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除 1（true）已删除， 0（false）未删除',
+    `gmt_created` DATETIME NOT NULL COMMENT '创建时间',
+    `gmt_modified` DATETIME NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `role_name` (`role_name`)
+)ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='角色表';
+
+-- 用户角色关联表
+DROP TABLE IF EXISTS `sys_user_role`;
+CREATE TABLE `sys_user_role`(
+    `id` CHAR(32) NOT NULL COMMENT '用户角色关联主键ID',
+    `uid` CHAR(32) NOT NULL COMMENT '用户ID',
+    `rid` CHAR(32) NOT NULL COMMENT '角色ID',
+    `is_deleted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除 1（true）已删除， 0（false）未删除',
+    `gmt_created` DATETIME NOT NULL COMMENT '创建时间',
+    `gmt_modified` DATETIME NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`uid`),
+    KEY `idx_role_id` (`rid`),
+    CONSTRAINT `user_role_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `sys_user` (`id`),
+    CONSTRAINT `user_role_ibfk_2` FOREIGN KEY (`rid`) REFERENCES `sys_role` (`id`)
+)ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户角色关联表';
 
 
