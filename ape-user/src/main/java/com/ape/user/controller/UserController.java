@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,6 +33,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/bb")
+    @PreAuthorize("hasAuthority('ROLE_NORMAL')")
     public ResultVO<String> aa(){
         return ResultVO.OK("aabb");
     }

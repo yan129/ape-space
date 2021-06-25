@@ -56,3 +56,9 @@ feign:
 #  file:
 #    path:
 
+# 配置使用jwt.jks
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

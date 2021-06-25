@@ -2,9 +2,7 @@ package com.ape.user.config;
 
 import com.ape.user.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -31,14 +29,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserServiceImpl userService;
     @Autowired
-    private LoginSuccessHandler successHandler;
+    private CustomLoginSuccessHandler successHandler;
     @Autowired
-    private LoginFailureHandler failureHandler;
+    private CustomLoginFailureHandler failureHandler;
     @Autowired
     private CustomLogoutSuccessHandler logoutSuccessHandler;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder(12);
+    }
 
     private static final String[] PERMIT_ALL_REQUEST = {
             "/ape-space/user/aa"
@@ -54,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public DaoAuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userService);
-        provider.setPasswordEncoder(passwordEncoder);
+        provider.setPasswordEncoder(passwordEncoder());
         provider.setHideUserNotFoundExceptions(false);
         return provider;
     }
@@ -80,22 +80,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors()
                 .and()
                 .csrf()
-                .disable()
-                .authorizeRequests()
-                .antMatchers("/oauth/**", "/user/bb").authenticated()
-                .and()
-                .formLogin()
-                .permitAll()
-                .loginProcessingUrl("/user/login")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .successHandler(successHandler)
-                .failureHandler(failureHandler)
-                .and()
-                .logout()
-                .permitAll()
-                .logoutUrl("/user/logout")
-                .logoutSuccessHandler(logoutSuccessHandler);
+                .disable();
+//                .authorizeRequests()
+//                .antMatchers("/oauth/**", "/user/bb").authenticated();
+//                .and()
+//                .formLogin()
+//                .permitAll()
+//                .loginProcessingUrl("/user/login")
+//                .usernameParameter("username")
+//                .passwordParameter("password")
+//                .successHandler(successHandler)
+//                .failureHandler(failureHandler)
+//                .and()
+//                .logout()
+//                .permitAll()
+//                .logoutUrl("/user/logout")
+//                .logoutSuccessHandler(logoutSuccessHandler);
     }
 
                 // 放行请求CSRF路径，用于生成第一个 csrf-token

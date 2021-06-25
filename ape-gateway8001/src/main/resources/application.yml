@@ -21,7 +21,7 @@ spring:
         cors-configurations:
           '[/**]':
             allow-credentials: true
-            allowed-origins: "*"
+            allowed-originPatterns: "*"
             allowed-headers: "*"
             allowed-methods:
               - OPTIONS
@@ -34,7 +34,7 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
-        - id: ape-article
+        - id: ape-sms
           uri: lb://ape-sms
           predicates:
             - Path=/ape-space/sms/**

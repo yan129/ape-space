@@ -16,11 +16,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,11 +40,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     private static final String ACCOUNT_DEFAULT_ROLE = "ROLE_NORMAL";
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder(12);
-    }
-
+    @Autowired
+    @Lazy
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private RoleMapper roleMapper;
     @Autowired
@@ -93,7 +90,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
         StringBuilder sb = new StringBuilder(loginVO.getUsername().trim());
         sb.replace(3, 7, "****");
-        String password = passwordEncoder().encode(loginVO.getPassword().trim());
+        String password = passwordEncoder.encode(loginVO.getPassword().trim());
 
         UserDO userDO = new UserDO();
         userDO.setNickname(sb.toString());

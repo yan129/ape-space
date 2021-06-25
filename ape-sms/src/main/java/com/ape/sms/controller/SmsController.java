@@ -47,11 +47,4 @@ public class SmsController {
         return send ? ResultVO.OK(SmsConstant.GET_CODE) : ResultVO.ERROR(SmsConstant.SERVICE_ERROR);
     }
 
-    @ApiOperation(value = "发送短信", notes = "发送短信")
-    @GetMapping("/hello")
-    public ResultVO<String> hello(){
-
-        return ResultVO.OK();
-    }
-
 }
