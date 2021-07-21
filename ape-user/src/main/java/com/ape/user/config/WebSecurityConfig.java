@@ -41,7 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private static final String[] PERMIT_ALL_REQUEST = {
-            "/ape-space/user/aa"
+            "/rsa/publicKey"
     };
 
     @Bean
@@ -71,16 +71,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
         auth.authenticationProvider(authenticationProvider());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors()
-                .and()
-                .csrf()
-                .disable();
+//        http.cors()
+//                .and()
+//                .csrf()
+//                .disable();
 //                .authorizeRequests()
 //                .antMatchers("/oauth/**", "/user/bb").authenticated();
 //                .and()

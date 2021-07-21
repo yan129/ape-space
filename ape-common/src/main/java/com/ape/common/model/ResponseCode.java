@@ -13,7 +13,10 @@ public enum ResponseCode {
 
     SUCCESS(200, "操作成功"),
     ERROR(400, "操作失败"),
-    REPEAT_OPERATION(1000, "请勿重复操作！");
+    UNAUTHORIZED(401, "请先登录"),
+    FORBIDDEN(403, "没有访问权限"),
+    REPEAT_OPERATION(1000, "请勿重复操作"),
+    USERNAME_NOT_EXIST(1051, "用户名不存在");
 
     private Integer code;
     private String msg;

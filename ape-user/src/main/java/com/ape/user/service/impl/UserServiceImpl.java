@@ -1,6 +1,8 @@
 package com.ape.user.service.impl;
 
+import cn.hutool.core.util.DesensitizedUtil;
 import com.ape.common.exception.ServiceException;
+import com.ape.common.model.ResponseCode;
 import com.ape.common.utils.StringUtils;
 import com.ape.user.bo.UserBO;
 import com.ape.user.mapper.RoleMapper;
@@ -52,9 +54,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     @Transactional(rollbackFor = Exception.class)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDO searchUser = searchUserByUsername(username);
-
         if (StringUtils.isEmpty(searchUser)){
-            throw new UsernameNotFoundException("");
+            throw new UsernameNotFoundException(ResponseCode.USERNAME_NOT_EXIST.getMsg());
         }
 
         List<RoleDO> roles = roleMapper.searchAllRoleByUid(searchUser.getId());
@@ -88,12 +89,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             throw new ServiceException();
         }
 
-        StringBuilder sb = new StringBuilder(loginVO.getUsername().trim());
-        sb.replace(3, 7, "****");
+        // 吟唱手机号位数 180****1999
+        String nickname = DesensitizedUtil.mobilePhone(loginVO.getUsername().trim());
         String password = passwordEncoder.encode(loginVO.getPassword().trim());
 
         UserDO userDO = new UserDO();
-        userDO.setNickname(sb.toString());
+        userDO.setNickname(nickname);
         userDO.setUsername(loginVO.getUsername().trim());
         userDO.setPassword(password);
 

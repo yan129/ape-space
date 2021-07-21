@@ -14,6 +14,18 @@ eureka:
 spring:
   application:
     name: ape-gateway8001
+  # redis配置
+  redis:
+    host: 47.115.125.76
+    port: 6379
+    database: 0
+    lettuce:
+      pool:
+        min-idle: 0 # 连接池中的最小空闲连接
+        max-idle: 8 # 连接池中的最大空闲连接
+        max-wait: -1ms # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-active: 8 # 连接池最大连接数
+    timeout: 5000
   cloud:
     gateway:
       globalcors:
@@ -31,11 +43,31 @@ spring:
               - DELETE
       discovery:
         locator:
-          enabled: true
-          lower-case-service-id: true
+          enabled: true #开启从注册中心动态创建路由的功能
+          lower-case-service-id: true #使用小写服务名，默认是大写
       routes:
+        - id: ape-user
+          uri: lb://ape-user
+          predicates:
+            - Path=/ape-space/**
         - id: ape-sms
           uri: lb://ape-sms
           predicates:
             - Path=/ape-space/sms/**
+        - id: client
+          uri: lb://client
+          predicates:
+            - Path=/ape/**
+#          filters:
+#            - StripPrefix=1
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: 'http://localhost:9526/ape-space/rsa/publicKey' #配置RSA的公钥访问地址
+secure:
+  ignore:
+    urls: #配置白名单路径
+      - "/actuator/**"
+      - "/ape-space/oauth/token"
 

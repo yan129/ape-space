@@ -1,15 +1,32 @@
 server:
   port: 9531
 
-auth-server: http://localhost:9526/ape-space
+#auth-server: http://localhost:9526/ape-space
 
-security:
-  oauth2:
-    client:
-      client-id: ape
-      client-secret: ape
-      user-authorization-uri: ${auth-server}/oauth/authorize
-      access-token-uri: ${auth-server}/oauth/token
-    resource:
-      jwk:
-        key-set-uri: ${auth-server}/oauth/token_key
+#security:
+#  oauth2:
+#    client:
+#      client-id: ape
+#      client-secret: ape
+#      user-authorization-uri: ${auth-server}/oauth/authorize
+#      access-token-uri: ${auth-server}/oauth/token
+#    resource:
+#      jwk:
+#        key-set-uri: ${auth-server}/oauth/token_key
+spring:
+  application:
+    name: client
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+# eureka配置
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:7001/eureka,http://127.0.0.1:7002/eureka
+  instance:
+    prefer-ip-address: true

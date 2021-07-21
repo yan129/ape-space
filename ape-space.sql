@@ -142,4 +142,51 @@ CREATE TABLE `sys_user_role`(
     CONSTRAINT `user_role_ibfk_2` FOREIGN KEY (`rid`) REFERENCES `sys_role` (`id`)
 )ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户角色关联表';
 
+-- 权限表
+DROP TABLE IF EXISTS `sys_permission`;
+CREATE TABLE `sys_permission`(
+    `id` CHAR(32) NOT NULL COMMENT '权限ID',
+    `name` VARCHAR(32) DEFAULT NULL COMMENT '权限名称',
+    `url` VARCHAR(255) DEFAULT NULL COMMENT '权限请求路径',
+    `description` VARCHAR(512) DEFAULT NULL COMMENT '描述',
+    `is_deleted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除 1（true）已删除， 0（false）未删除',
+    `gmt_created` DATETIME NOT NULL COMMENT '创建时间',
+    `gmt_modified` DATETIME NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+)ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='权限表';
 
+
+-- 角色权限关联表
+DROP TABLE IF EXISTS `sys_role_permission`;
+CREATE TABLE `sys_role_permission`(
+    `id` CHAR(32) NOT NULL COMMENT '角色权限关联主键ID',
+    `rid` CHAR(32) NOT NULL COMMENT '角色ID',
+    `pid` CHAR(32) NOT NULL COMMENT '权限ID',
+    `is_deleted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除 1（true）已删除， 0（false）未删除',
+    `gmt_created` DATETIME NOT NULL COMMENT '创建时间',
+    `gmt_modified` DATETIME NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_role_id` (`rid`),
+    KEY `idx_permission_id` (`pid`)
+)ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='角色权限关联表';
+
+-- 菜单表
+DROP TABLE IF EXISTS `sys_menu`;
+CREATE TABLE `sys_menu`(
+    `id` CHAR(32) NOT NULL COMMENT '菜单ID',
+    `parent_id` CHAR(32) DEFAULT NULL COMMENT '父级ID',
+    `path` VARCHAR(255) DEFAULT NULL COMMENT '前端路由跳转路径',
+    `component` VARCHAR(32) DEFAULT NULL COMMENT '前端组件名称',
+    `component_name` VARCHAR(32) DEFAULT NULL COMMENT '组件名字',
+    `icon` VARCHAR(64) DEFAULT NULL COMMENT 'icon图标',
+    `icon_url` VARCHAR(128) DEFAULT NULL COMMENT 'icon图标路径',
+    `keep_alive` TINYINT(1) DEFAULT '0' COMMENT '切换组件是否保持存活，默认0否，1是',
+    `require_auth` TINYINT(1) DEFAULT '0' COMMENT '是否登录认证才能访问，默认0否，1是',
+    `enabled` TINYINT(1) DEFAULT '1' COMMENT '是否可用，0否，默认1是',
+    `create_user` VARCHAR(64) DEFAULT NULL COMMENT '创建者',
+    `is_deleted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除 1（true）已删除， 0（false）未删除',
+    `gmt_created` DATETIME NOT NULL COMMENT '创建时间',
+    `gmt_modified` DATETIME NOT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_parent_id` (`parent_id`)
+)ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='菜单表';

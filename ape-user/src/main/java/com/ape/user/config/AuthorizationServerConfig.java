@@ -13,12 +13,16 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
 import java.security.KeyPair;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -38,25 +42,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private AuthenticationManager authenticationManager;
     @Autowired
     private UserServiceImpl userService;
-
-    @Bean
-    public TokenStore jwtTokenStore(){
-        return new JwtTokenStore(jwtAccessTokenConverter());
-    }
-
-    @Bean
-    public JwtAccessTokenConverter jwtAccessTokenConverter(){
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-//        converter.setSigningKey("ape-key");
-        converter.setKeyPair(keyPair());
-        return converter;
-    }
-
-    @Bean
-    public KeyPair keyPair(){
-        KeyStoreKeyFactory factory = new KeyStoreKeyFactory(new ClassPathResource("jwt.jks"), "1291248490".toCharArray());
-        return factory.getKeyPair("ape-space", "1291248490".toCharArray());
-    }
+    @Autowired
+    private CustomTokenEnhancer tokenEnhancer;
+    @Autowired
+    private CustomOauthException oauthException;
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -80,18 +69,57 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        DefaultTokenServices tokenServices = setTokenServices(endpoints);
         endpoints.authenticationManager(authenticationManager)
+                // 配置加载用户信息的服务
                 .userDetailsService(userService)
-                .tokenStore(jwtTokenStore()).accessTokenConverter(jwtAccessTokenConverter());
+//                .tokenStore(jwtTokenStore())
+                .accessTokenConverter(jwtAccessTokenConverter())
+//                .tokenEnhancer(tokenEnhancerChain())
+                .tokenServices(tokenServices)
+                .exceptionTranslator(oauthException);
+    }
+
+    private DefaultTokenServices setTokenServices(AuthorizationServerEndpointsConfigurer endpoints) {
         DefaultTokenServices tokenServices = (DefaultTokenServices) endpoints.getDefaultAuthorizationServerTokenServices();
-        tokenServices.setTokenStore(endpoints.getTokenStore());
+        tokenServices.setTokenStore(jwtTokenStore());
         tokenServices.setSupportRefreshToken(true);
         tokenServices.setClientDetailsService(endpoints.getClientDetailsService());
-        tokenServices.setTokenEnhancer(endpoints.getTokenEnhancer());
+        tokenServices.setTokenEnhancer(tokenEnhancerChain());
         // 设置access_token有效期
-        tokenServices.setAccessTokenValiditySeconds((int) TimeUnit.SECONDS.toSeconds(60));
+        tokenServices.setAccessTokenValiditySeconds((int) TimeUnit.SECONDS.toSeconds(500));
         // 设置refresh_token有效期
-        tokenServices.setRefreshTokenValiditySeconds(((int) TimeUnit.SECONDS.toSeconds(200)));
-        endpoints.tokenServices(tokenServices);
+        tokenServices.setRefreshTokenValiditySeconds(((int) TimeUnit.SECONDS.toSeconds(1000)));
+        return tokenServices;
+    }
+
+    @Bean
+    public TokenStore jwtTokenStore(){
+        return new JwtTokenStore(jwtAccessTokenConverter());
+    }
+
+    @Bean
+    public JwtAccessTokenConverter jwtAccessTokenConverter(){
+        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+        converter.setKeyPair(keyPair());
+        return converter;
+    }
+
+    @Bean
+    public KeyPair keyPair(){
+        KeyStoreKeyFactory factory = new KeyStoreKeyFactory(new ClassPathResource("jwt.jks"), "1291248490".toCharArray());
+        return factory.getKeyPair("ape-space", "1291248490".toCharArray());
+    }
+
+    @Bean
+    public TokenEnhancerChain tokenEnhancerChain(){
+        TokenEnhancerChain enhancerChain = new TokenEnhancerChain();
+
+        List<TokenEnhancer> delegates = new ArrayList<>();
+        delegates.add(tokenEnhancer);
+        delegates.add(jwtAccessTokenConverter());
+        // 配置JWT的内容增强
+        enhancerChain.setTokenEnhancers(delegates);
+        return enhancerChain;
     }
 }

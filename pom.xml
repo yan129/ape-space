@@ -42,7 +42,7 @@
         <freemarker.version>2.3.30</freemarker.version>
         <mysql.version>8.0.22</mysql.version>
         <druid.version>1.1.10</druid.version>
-        <redis.version>2.4.3</redis.version>
+        <redis.version>2.4.5</redis.version>
         <commons-pool2.version>2.9.0</commons-pool2.version>
         <hibernate.version>6.1.6.Final</hibernate.version>
         <swagger.version>2.9.2</swagger.version>
@@ -54,6 +54,7 @@
 <!--        <joda-time.version>2.10.9</joda-time.version>-->
         <commons-lang3.version>3.11</commons-lang3.version>
         <hutool.version>5.6.5</hutool.version>
+        <nimbus-jose-jwt.version>8.21</nimbus-jose-jwt.version>
     </properties>
 
     <dependencyManagement>
@@ -166,6 +167,11 @@
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${nimbus-jose-jwt.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
