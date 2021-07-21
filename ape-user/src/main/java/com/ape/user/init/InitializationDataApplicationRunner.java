@@ -33,7 +33,7 @@ public class InitializationDataApplicationRunner implements ApplicationRunner {
     /**
      * 对应网关取出redis数据的key
      */
-    public static final String RESOURCE_ROLES_KEY = "AUTH:RESOURCE_ROLES_MAP";
+    private static final String RESOURCE_ROLES_KEY = "AUTH:RESOURCE_ROLES_MAP";
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
