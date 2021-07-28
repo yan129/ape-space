@@ -1,6 +1,7 @@
 package com.ape.user.service;
 
 import cn.hutool.core.collection.CollUtil;
+import com.ape.user.constant.AuthConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class ResourceServiceImpl {
     private Map<String, List<String>> resourceRolesMap;
 
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @PostConstruct
     public void initData() {
@@ -28,6 +29,7 @@ public class ResourceServiceImpl {
         resourceRolesMap.put("/ape/hello", CollUtil.toList("ROLE_NORMAL"));
         resourceRolesMap.put("/ape/test", CollUtil.toList("ROLE_TEST"));
         resourceRolesMap.put("/ape/user", CollUtil.toList("ROLE_NORMAL", "ROLE_TEST"));
-//        redisTemplate.opsForHash().putAll("AUTH:RESOURCE_ROLES_MAP", resourceRolesMap);
+        redisTemplate.delete(AuthConstant.RESOURCE_ROLES_KEY);
+        redisTemplate.opsForHash().putAll(AuthConstant.RESOURCE_ROLES_KEY, resourceRolesMap);
     }
 }

@@ -11,7 +11,7 @@ package com.ape.gateway.constant;
 public class AuthConstant {
 
     /**
-     * prefix = ROLE_
+     * prefix = ROLE_，默认SCOPE_
       */
     public static final String AUTHORITY_PREFIX = "";
 

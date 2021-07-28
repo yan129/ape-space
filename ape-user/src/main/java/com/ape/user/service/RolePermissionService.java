@@ -22,4 +22,16 @@ public interface RolePermissionService extends IService<RolePermissionDO> {
      */
     List<Map<String, Object>> selectAllLinkedData();
 
+    /**
+     * 分配角色权限
+     * @param rolePermissionDO
+     */
+    void assignRolePermission(RolePermissionDO rolePermissionDO);
+
+    /**
+     * 删除角色权限
+     * @param id
+     * @return
+     */
+    boolean removeRolePermission(String id);
 }

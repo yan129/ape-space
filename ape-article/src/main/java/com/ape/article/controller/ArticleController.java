@@ -1,9 +1,9 @@
 package com.ape.article.controller;
 
 
-import com.ape.article.annotation.HtmlFilter;
 import com.ape.article.model.ArticleDO;
 import com.ape.article.service.ArticleService;
+import com.ape.common.annotation.HtmlFilter;
 import com.ape.common.model.ResultVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;

@@ -1,4 +1,4 @@
-package com.ape.article.annotation;
+package com.ape.common.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

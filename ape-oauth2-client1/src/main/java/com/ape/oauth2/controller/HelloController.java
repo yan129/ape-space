@@ -26,4 +26,9 @@ public class HelloController {
     public String user() {
         return "user success !!!";
     }
+
+    @GetMapping("/ape/common")
+    public String common() {
+        return "common success !!!";
+    }
 }

@@ -1,7 +1,5 @@
 package com.ape.gateway.compont;
 
-import cn.hutool.core.convert.Convert;
-import com.ape.common.utils.StringUtils;
 import com.ape.gateway.constant.AuthConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.util.CollectionHelper;
@@ -15,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.server.authorization.AuthorizationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.Iterator;
@@ -44,12 +43,12 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
         String requestPath = request.getURI().getPath();
 
         // token为空拒绝访问
-        if (StringUtils.isBlank(request.getHeaders().getFirst(AuthConstant.JWT_TOKEN_HEADER))){
-            return Mono.just(new AuthorizationDecision(false));
-        }
+//        if (StringUtils.isBlank(request.getHeaders().getFirst(AuthConstant.JWT_TOKEN_HEADER))){
+//            return Mono.just(new AuthorizationDecision(false));
+//        }
 
+        System.out.println(redisTemplate.opsForHash().entries(AuthConstant.RESOURCE_ROLES_KEY));
         Map<String, List<String>> resourceRoleMap = redisTemplate.opsForHash().entries(AuthConstant.RESOURCE_ROLES_KEY);
-
         // 请求路径匹配到的资源需要的角色权限集合authorities
         List<String> authorities = CollectionHelper.newArrayList();
         Iterator<String> iterator = resourceRoleMap.keySet().iterator();
@@ -57,8 +56,16 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
             String pattern = iterator.next();
             if (antPathMatcher.match(pattern, requestPath)){
                 authorities.addAll(resourceRoleMap.get(pattern));
+                // 可以加break
             }
         }
+
+        // 请求路径没有匹配上相应角色直接放行通过
+        if (CollectionUtils.isEmpty(authorities)){
+            return Mono.just(new AuthorizationDecision(true));
+        }
+
+        System.out.println(authorities);
 
         //认证通过且角色匹配的用户可访问当前路径
         return mono.filter(Authentication::isAuthenticated)
@@ -72,6 +79,7 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
                     return authorities.contains(role);
                 })
                 .map(AuthorizationDecision::new)
-                .defaultIfEmpty(new AuthorizationDecision(false));
+                // 请求路径没有设置相应角色直接放行通过
+                .defaultIfEmpty(new AuthorizationDecision(true));
     }
 }
