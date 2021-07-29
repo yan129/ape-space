@@ -5,6 +5,7 @@ import cn.hutool.json.JSONUtil;
 import com.ape.common.annotation.HtmlFilter;
 import com.ape.common.factory.HtmlFilterFactory;
 import com.ape.common.model.BaseEntity;
+import com.ape.common.utils.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -24,11 +25,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class HtmlFilterAop {
 
+    private static String packagePrefix;
+    static {
+        String name = HtmlFilterAop.class.getName();
+        if (name.contains(".")){
+            String[] split = StringUtils.split(name, ".");
+            packagePrefix = split[0] + "." + split[1];
+        }
+    }
+
     @Autowired
     private HtmlFilterFactory htmlFilterFactory;
-//    private static String[] path = aa.split(".");
-//    private static String packagePrefix = path.length == 1 ? path[0] : (path[0] + "." + path[1]);
-    private static String packagePrefix = "com.ape";
 
     @Pointcut(value = "@annotation(htmlFilter)", argNames = "htmlFilter")
     public void pointcut(HtmlFilter htmlFilter){}

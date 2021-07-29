@@ -71,7 +71,7 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
 
         // 将角色权限对应数据存入redis
 //        redisTemplate.delete(AuthConstant.RESOURCE_ROLES_KEY);
-//        redisTemplate.opsForHash().putAll(AuthConstant.RESOURCE_ROLES_KEY, resourceRolesMap);
+        redisTemplate.opsForHash().putAll(AuthConstant.RESOURCE_ROLES_KEY, resourceRolesMap);
         return resourceRolesMap;
     }
 

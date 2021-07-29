@@ -47,7 +47,6 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
 //            return Mono.just(new AuthorizationDecision(false));
 //        }
 
-        System.out.println(redisTemplate.opsForHash().entries(AuthConstant.RESOURCE_ROLES_KEY));
         Map<String, List<String>> resourceRoleMap = redisTemplate.opsForHash().entries(AuthConstant.RESOURCE_ROLES_KEY);
         // 请求路径匹配到的资源需要的角色权限集合authorities
         List<String> authorities = CollectionHelper.newArrayList();
@@ -56,7 +55,7 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
             String pattern = iterator.next();
             if (antPathMatcher.match(pattern, requestPath)){
                 authorities.addAll(resourceRoleMap.get(pattern));
-                // 可以加break
+                break;
             }
         }
 
@@ -64,8 +63,6 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
         if (CollectionUtils.isEmpty(authorities)){
             return Mono.just(new AuthorizationDecision(true));
         }
-
-        System.out.println(authorities);
 
         //认证通过且角色匹配的用户可访问当前路径
         return mono.filter(Authentication::isAuthenticated)

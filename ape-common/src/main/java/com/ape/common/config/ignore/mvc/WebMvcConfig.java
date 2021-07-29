@@ -1,4 +1,4 @@
-package com.ape.common.config;
+package com.ape.common.config.ignore.mvc;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

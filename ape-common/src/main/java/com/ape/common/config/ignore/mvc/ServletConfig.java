@@ -1,4 +1,4 @@
-package com.ape.common.config;
+package com.ape.common.config.ignore.mvc;
 
 import lombok.Getter;
 import lombok.NonNull;

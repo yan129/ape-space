@@ -28,8 +28,8 @@ public class ResourceServiceImpl {
         resourceRolesMap = new TreeMap<>();
         resourceRolesMap.put("/ape/hello", CollUtil.toList("ROLE_NORMAL"));
         resourceRolesMap.put("/ape/test", CollUtil.toList("ROLE_TEST"));
+        resourceRolesMap.put("/ape/test22", CollUtil.toList("ROLE_TEST"));
         resourceRolesMap.put("/ape/user", CollUtil.toList("ROLE_NORMAL", "ROLE_TEST"));
-        redisTemplate.delete(AuthConstant.RESOURCE_ROLES_KEY);
         redisTemplate.opsForHash().putAll(AuthConstant.RESOURCE_ROLES_KEY, resourceRolesMap);
     }
 }

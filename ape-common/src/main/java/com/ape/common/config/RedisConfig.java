@@ -59,7 +59,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         // 过期，用下面的方法来代替
         //objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        // 指定序列化输入的类型，类必须是非final修饰的，final修饰的类，比如String,Integer等会跑出异常
+        // 指定序列化输入的类型，类必须是非final修饰的，final修饰的类，比如String,Integer等会抛出异常
         objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,
                 ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
         jacksonSerializer.setObjectMapper(objectMapper);
