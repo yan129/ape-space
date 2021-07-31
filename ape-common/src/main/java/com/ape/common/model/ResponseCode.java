@@ -15,8 +15,13 @@ public enum ResponseCode {
     ERROR(400, "操作失败"),
     UNAUTHORIZED(401, "请先登录"),
     FORBIDDEN(403, "权限不足"),
+
     REPEAT_OPERATION(1000, "请勿重复操作"),
-    USERNAME_NOT_EXIST(1051, "用户名不存在");
+    REPEAT_SUBMIT(1000, "请勿重复提交"),
+
+    USERNAME_NOT_EXIST(1051, "用户名不存在"),
+
+    TOKEN_MISSING(1200, "Token缺失");
 
     private Integer code;
     private String msg;

@@ -1,5 +1,6 @@
 package com.ape.oauth2.controller;
 
+import com.ape.common.annotation.ApiIdempotent;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +29,7 @@ public class HelloController {
     }
 
     @GetMapping("/ape/common")
+    @ApiIdempotent
     public String common() {
         return "common success !!!";
     }

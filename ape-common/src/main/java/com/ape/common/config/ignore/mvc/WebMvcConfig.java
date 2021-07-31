@@ -1,7 +1,11 @@
 package com.ape.common.config.ignore.mvc;
 
+import com.ape.common.config.ignore.interceptor.IdempotentTokenInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -12,6 +16,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private IdempotentTokenInterceptor idempotentTokenInterceptor;
+
+    /**
+     * 注册接口幂等性拦截器
+     * @param registry
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(idempotentTokenInterceptor);
+    }
 
     /**
      * 配置全局跨域

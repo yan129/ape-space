@@ -30,6 +30,6 @@ public class ResourceServiceImpl {
         resourceRolesMap.put("/ape/test", CollUtil.toList("ROLE_TEST"));
         resourceRolesMap.put("/ape/test22", CollUtil.toList("ROLE_TEST"));
         resourceRolesMap.put("/ape/user", CollUtil.toList("ROLE_NORMAL", "ROLE_TEST"));
-        redisTemplate.opsForHash().putAll(AuthConstant.RESOURCE_ROLES_KEY, resourceRolesMap);
+//        redisTemplate.opsForHash().putAll(AuthConstant.RESOURCE_ROLES_KEY, resourceRolesMap);
     }
 }
