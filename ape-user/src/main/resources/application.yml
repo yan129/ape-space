@@ -1,3 +1,18 @@
 spring:
   profiles:
     active: pro
+
+oauth2:
+  github:
+    clientId: 11f7e5effa68573bcd64
+    clientSecret: daf190e3a2c42b35ca2e5ef4efa2a9465b487a60
+    authorizeUrl: https://github.com/login/oauth/authorize
+    redirectUrl: http://localhost:9526/ape-space/oauth2/github/callback
+    accessTokenUrl: https://github.com/login/oauth/access_token
+    userInfoUrl: https://api.github.com/user
+  gitee:
+    clientId: b92a75f25606f57bd2186a4f655d3cee0256d7e7a05af05238732828743ef237
+    clientSecret: 6edb633cea0d4772d593da351d776af8d7849a37a2bc1d1f720c67ece34e47b8
+    authorizeUrl: https://gitee.com/oauth/authorize
+    redirectUrl: http://localhost:9526/ape-space/oauth2/gitee/callback
+

@@ -155,6 +155,6 @@ public class MPGenerator {
     }
 
     public static void main(String[] args) {
-        MPGenerator.generator("ape-user", "user", "sys_permission", "sys_");
+        MPGenerator.generator("ape-user", "user", "sys_social_user_detail", "sys_");
     }
 }

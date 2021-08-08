@@ -3,6 +3,7 @@ package com.ape.user.service.impl;
 import cn.hutool.core.util.DesensitizedUtil;
 import com.ape.common.exception.ServiceException;
 import com.ape.common.model.ResponseCode;
+import com.ape.common.utils.CommonUtil;
 import com.ape.common.utils.StringUtils;
 import com.ape.user.bo.UserBO;
 import com.ape.user.mapper.RoleMapper;
@@ -17,6 +18,7 @@ import com.ape.user.vo.LoginVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import me.zhyd.oauth.model.AuthUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,8 +42,6 @@ import java.util.List;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements UserService, UserDetailsService {
 
-    private static final String ACCOUNT_DEFAULT_ROLE = "ROLE_NORMAL";
-
     @Autowired
     @Lazy
     private PasswordEncoder passwordEncoder;
@@ -53,6 +53,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // 因为设计上该用户表保存了第三方登录账号，所以要限制能使用第三方账号的用户名密码登录，要判断是不是手机号登录
+        if (!CommonUtil.TelephoneRegex(username)) {
+            throw new UsernameNotFoundException(ResponseCode.USERNAME_NOT_EXIST.getMsg());
+        }
         UserDO searchUser = searchUserByUsername(username);
         if (StringUtils.isEmpty(searchUser)){
             throw new UsernameNotFoundException(ResponseCode.USERNAME_NOT_EXIST.getMsg());
@@ -89,7 +93,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             throw new ServiceException();
         }
 
-        // 吟唱手机号位数 180****1999
+        // 隐藏手机号位数 180****1999
         String nickname = DesensitizedUtil.mobilePhone(loginVO.getUsername().trim());
         String password = passwordEncoder.encode(loginVO.getPassword().trim());
 
@@ -121,5 +125,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             userRoleDO.setRid(roleDO.getId());
             userRoleMapper.insert(userRoleDO);
         }
+    }
+
+    @Override
+    public UserDO registerSocialUser(AuthUser authUser) {
+        UserDO userDO = new UserDO();
+        userDO.setUsername(authUser.getUuid());
+        userDO.setNickname(authUser.getUsername());
+        userDO.setPassword(ACCOUNT_DEFAULT_PASSWORD);
+        userDO.setAvatar(authUser.getAvatar());
+        userDO.setGender(Integer.parseInt(authUser.getGender().getCode()));
+        userDO.setRemark(authUser.getRemark());
+        this.save(userDO);
+        this.assignNormalRole(userDO.getId());
+        return userDO;
     }
 }

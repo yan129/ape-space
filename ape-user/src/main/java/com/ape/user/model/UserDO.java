@@ -54,7 +54,7 @@ public class UserDO extends BaseEntity {
     private String profile;
 
     @ApiModelProperty(value = "性别，默认 1 为男，0 为女")
-    private Boolean gender;
+    private Integer gender;
 
     @ApiModelProperty(value = "账号是否可用，默认 1 为可用，0 不可用")
     private Boolean available;

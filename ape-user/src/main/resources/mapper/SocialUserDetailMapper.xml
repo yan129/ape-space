@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ape.user.mapper.SocialUserDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ape.user.model.SocialUserDetailDO">
+        <id column="uuid" property="uuid" />
+        <result column="source" property="source" />
+        <result column="access_token" property="accessToken" />
+        <result column="expire_in" property="expireIn" />
+        <result column="refresh_token" property="refreshToken" />
+        <result column="refresh_token_expire_in" property="refreshTokenExpireIn" />
+        <result column="token_type" property="tokenType" />
+    </resultMap>
+
+</mapper>

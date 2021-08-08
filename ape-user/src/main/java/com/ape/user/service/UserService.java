@@ -3,6 +3,7 @@ package com.ape.user.service;
 import com.ape.user.model.UserDO;
 import com.ape.user.vo.LoginVO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import me.zhyd.oauth.model.AuthUser;
 
 /**
  * <p>
@@ -14,9 +15,19 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserService extends IService<UserDO> {
 
+    String ACCOUNT_DEFAULT_ROLE = "ROLE_NORMAL";
+    String ACCOUNT_DEFAULT_PASSWORD = "1291248490";
+
     /**
      * 用户注册
      * @param loginVO
      */
     void register(LoginVO loginVO);
+
+    /**
+     * 注册第三方账号登录信息到用户表
+     * @param authUser
+     * @return
+     */
+    UserDO registerSocialUser(AuthUser authUser);
 }

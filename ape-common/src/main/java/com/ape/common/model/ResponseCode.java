@@ -16,10 +16,10 @@ public enum ResponseCode {
     UNAUTHORIZED(401, "请先登录"),
     FORBIDDEN(403, "权限不足"),
 
-    REPEAT_OPERATION(1000, "请勿重复操作"),
     REPEAT_SUBMIT(1000, "请勿重复提交"),
+    REPEAT_SEND(1001, "请勿重复发送"),
 
-    USERNAME_NOT_EXIST(1051, "用户名不存在"),
+    USERNAME_NOT_EXIST(1051, "账号不存在"),
 
     TOKEN_MISSING(1200, "Token缺失");
 

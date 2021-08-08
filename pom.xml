@@ -13,6 +13,7 @@
         <module>ape-sms</module>
         <module>ape-user</module>
         <module>ape-oauth2-client1</module>
+        <module>ape-canal</module>
     </modules>
 
     <parent>

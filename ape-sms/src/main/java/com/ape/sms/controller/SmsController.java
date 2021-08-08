@@ -40,7 +40,7 @@ public class SmsController {
 
         // 判断缓存中key是否过期
         if (stringRedisTemplate.hasKey(SmsConstant.PREFIX + telephone.trim())){
-            return ResultVO.ERROR(ResponseCode.REPEAT_OPERATION.getMsg());
+            return ResultVO.ERROR(ResponseCode.REPEAT_SEND.getMsg());
         }
 
         boolean send = smsService.send(telephone);

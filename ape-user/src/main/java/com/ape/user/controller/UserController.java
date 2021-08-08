@@ -2,6 +2,7 @@ package com.ape.user.controller;
 
 
 import cn.hutool.core.date.DateUtil;
+import com.ape.common.annotation.ApiIdempotent;
 import com.ape.common.model.ResultVO;
 import com.ape.user.service.UserService;
 import com.ape.user.vo.LoginVO;
@@ -40,6 +41,7 @@ public class UserController {
 
     @ApiOperation(value = "用户注册", notes = "用户注册")
     @PostMapping("/register")
+    @ApiIdempotent
     public ResultVO<Void> register(@RequestBody @Valid LoginVO loginVO){
         userService.register(loginVO);
         log.info("用户{}于{}注册成功！", loginVO.getUsername(), DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));

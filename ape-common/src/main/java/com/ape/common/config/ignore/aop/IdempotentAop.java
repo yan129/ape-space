@@ -40,7 +40,7 @@ public class IdempotentAop {
     public void pointcut(ApiIdempotent apiIdempotent){}
 
     /**
-     * 后置最终通知，方法执行完就会执行后置通知方法
+     * 前置通知，方法执行前就会执行
      * @param joinPoint
      * @param apiIdempotent
      * @return

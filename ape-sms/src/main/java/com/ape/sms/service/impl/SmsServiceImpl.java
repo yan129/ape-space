@@ -76,8 +76,9 @@ public class SmsServiceImpl implements SmsService {
 
             int balance = (int) balanceMap.get("data");
 
-            if (balance == 10){
+            if (balance == 50){
                 log.error("短信剩余数量：{}条", balance);
+                // 通知开发人员
                 return false;
             }
 

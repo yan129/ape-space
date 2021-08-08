@@ -19,3 +19,8 @@ Keytool –genkey -alias my_alias  -keyalg RSA  –keystore  C:\mykeystore.keyst
  -keypass      指定别名条目的密码(私钥的密码)
   -dname       指定证书拥有者信息 例如：  "CN=名字与姓氏,OU=组织单位名称,O=组织名称,L=城市或区域名称,ST=州或省份名称,C=单位的两字母国家代码"
 ````
+GitHub回调地址：http://localhost:9526/ape-space/oauth2/github/callback
+Homepage URL 用户使用github登陆成功后跳转的页面：http://localhost:9526/ape-space
+
+第三方登录接口：
+GitHub: http://localhost:9526/oauth2/github/login

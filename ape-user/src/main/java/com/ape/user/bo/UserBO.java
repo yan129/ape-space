@@ -2,7 +2,6 @@ package com.ape.user.bo;
 
 import com.ape.user.model.RoleDO;
 import com.ape.user.model.UserDO;
-import com.baomidou.mybatisplus.extension.api.R;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -66,6 +65,4 @@ public class UserBO extends UserDO implements UserDetails {
         return super.getAvailable();
     }
 
-//    @ApiModelProperty(value = "用户拥有路径访问权限")
-//    private List<PermissionDO> permissions;
 }
