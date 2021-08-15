@@ -25,7 +25,7 @@ public class CustomTokenEnhancer implements TokenEnhancer {
         UserBO principal = (UserBO) authentication.getPrincipal();
 
         Map<String, Object> info = new HashMap<>();
-//        info.put("id", principal.getId());
+//        info.put("authorities", principal.getAuthorities());
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(info);
 
         return accessToken;

@@ -2,7 +2,6 @@ package com.ape.user.config;
 
 import com.ape.common.model.ResultVO;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +18,7 @@ public class CustomOauthException implements WebResponseExceptionTranslator {
 
     @Override
     public ResponseEntity translate(Exception e) throws Exception {
-        if (e instanceof UsernameNotFoundException){
-            return ResponseEntity.ok(ResultVO.ERROR(e.getMessage()));
-        }
+
         return ResponseEntity.ok(ResultVO.ERROR(e.getMessage()));
     }
 

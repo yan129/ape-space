@@ -214,3 +214,22 @@ CREATE TABLE `sys_social_user_detail`(
     PRIMARY KEY (`uuid`),
     KEY `idx_username` (`username`)
 )ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='第三方登录用户表';
+
+-- 客户端信息表oauth_client_details
+CREATE TABLE `oauth_client_details`  (
+    `client_id` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+    `resource_ids` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+    `client_secret` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+    `scope` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+    `authorized_grant_types` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+    `web_server_redirect_uri` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+    `authorities` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+    `access_token_validity` int(11) NULL DEFAULT NULL,
+    `refresh_token_validity` int(11) NULL DEFAULT NULL,
+    `additional_information` varchar(4096) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+    `autoapprove` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+    PRIMARY KEY (`client_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+INSERT INTO `oauth_client_details` VALUES ('ape', NULL, '$2a$12$VJuJz.FT6PImmXv8mn1Wauj1S218MLPvYWw4CFMJjYAqwJSAmgM1y', 'all', 'password,refresh_token', NULL, NULL, NULL, NULL, NULL, '1');
+

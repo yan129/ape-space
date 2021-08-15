@@ -1,9 +1,17 @@
 package com.ape.common;
 
+import cn.hutool.core.codec.Base64;
+import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
+import cn.hutool.crypto.symmetric.SymmetricCrypto;
+import com.ape.common.utils.AESUnit;
 import com.ape.common.utils.RsaUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,4 +38,34 @@ public class RsaUtilTest {
         String descryptData = RsaUtil.descryptData(privateKey, encryptData);
         System.out.println(descryptData);
     }
+
+    @Test
+    @DisplayName("测试aes加密")
+    public void test_encrypt_aes(){
+        String content = "1291248cwaas49cascacasasadwdca0fqwqcq";
+        //随机生成密钥
+        byte[] key = SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue()).getEncoded();
+
+        //构建
+        SymmetricCrypto aes = new SymmetricCrypto(SymmetricAlgorithm.AES, key);
+
+        //加密
+        byte[] encrypt = aes.encrypt(content);
+        //解密
+        byte[] decrypt = aes.decrypt(Base64.encode(encrypt));
+        System.out.println(new String(decrypt));
+
+        //加密为16进制表示
+        String encryptHex = aes.encryptHex(content);
+        System.out.println(encryptHex);
+        //解密为字符串 54746c5b95cee60cf53b578b0d27356b
+        String decryptStr = aes.decryptStr(encryptHex, CharsetUtil.CHARSET_UTF_8);
+        System.out.println(decryptStr);
+
+        String encryptData = AESUnit.encrypt(content);
+        System.out.println(encryptData);
+        String decrypt1 = AESUnit.decrypt(encryptData);
+        System.out.println(decrypt1);
+    }
+
 }

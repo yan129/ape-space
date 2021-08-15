@@ -18,10 +18,18 @@ public enum ResponseCode {
 
     REPEAT_SUBMIT(1000, "请勿重复提交"),
     REPEAT_SEND(1001, "请勿重复发送"),
+    TOKEN_MISSING(1002, "Token缺失"),
 
-    USERNAME_NOT_EXIST(1051, "账号不存在"),
 
-    TOKEN_MISSING(1200, "Token缺失");
+    USER_LOGIN_FAILURE(2001, "登录失败"),
+    USERNAME_NOT_EXIST(2002, "账号不存在"),
+    USER_ACCOUNT_EXPIRED(2003, "账号过期，请联系客服"),
+    USER_CREDENTIALS_ERROR(2004, "违规封禁"),
+    USER_CREDENTIALS_EXPIRED(2005, "密码过期，请重新设置"),
+    USER_ACCOUNT_DISABLE(2006, "账户违规禁用，请联系客服"),
+    USER_ACCOUNT_LOCKED(2007, "账户被锁定，请联系客服"),
+    USER_ACCOUNT_ALREADY_EXIST(2009, "账号已存在"),
+    USER_ACCOUNT_LOGOUT_SUCCESS(2010, "账号注销成功");
 
     private Integer code;
     private String msg;

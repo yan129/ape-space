@@ -6,6 +6,7 @@ import com.ape.common.annotation.ApiIdempotent;
 import com.ape.common.model.ResultVO;
 import com.ape.user.service.UserService;
 import com.ape.user.vo.LoginVO;
+import com.ape.user.vo.RegisterVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,15 @@ public class UserController {
     public ResultVO<Void> register(@RequestBody @Valid LoginVO loginVO){
         userService.register(loginVO);
         log.info("用户{}于{}注册成功！", loginVO.getUsername(), DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
+        return ResultVO.OK();
+    }
+
+    @ApiOperation(value = "免密注册", notes = "免密注册")
+    @PostMapping("/noSecretRegister")
+    @ApiIdempotent
+    public ResultVO<Void> noSecretRegister(@RequestBody @Valid RegisterVO registerVO){
+        userService.noSecretRegister(registerVO);
+        log.info("用户{}于{}注册成功！", registerVO.getUsername(), DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
         return ResultVO.OK();
     }
 

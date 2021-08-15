@@ -17,6 +17,8 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
  */
 public interface SocialUserDetailService extends IService<SocialUserDetailDO> {
 
+    String clientId = "ape";
+
     /**
      * 对第三方账号自定义生成token
      * @param userBO

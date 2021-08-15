@@ -15,12 +15,17 @@ import com.ape.user.mapper.UserMapper;
 import com.ape.user.model.UserRoleDO;
 import com.ape.user.service.UserService;
 import com.ape.user.vo.LoginVO;
+import com.ape.user.vo.RegisterVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.model.AuthUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -58,14 +63,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             throw new UsernameNotFoundException(ResponseCode.USERNAME_NOT_EXIST.getMsg());
         }
         UserDO searchUser = searchUserByUsername(username);
+        // 账号不存在
         if (StringUtils.isEmpty(searchUser)){
             throw new UsernameNotFoundException(ResponseCode.USERNAME_NOT_EXIST.getMsg());
         }
 
-        List<RoleDO> roles = roleMapper.searchAllRoleByUid(searchUser.getId());
         UserBO userBO = UserDOMapper.INSTANCE.doToBO(searchUser);
+        loginException(userBO);
+        List<RoleDO> roles = roleMapper.searchAllRoleByUid(searchUser.getId());
         userBO.setRoles(roles);
         return userBO;
+    }
+
+    public void loginException(UserBO searchUser){
+        // 账号被禁用
+        if (!searchUser.isEnabled()){
+            throw new DisabledException(ResponseCode.USER_ACCOUNT_DISABLE.getMsg());
+        }
+        // 账号被锁定
+        if (!searchUser.isAccountNonLocked()){
+            throw new LockedException(ResponseCode.USER_ACCOUNT_LOCKED.getMsg());
+        }
+
+        // 账号过期
+        if (!searchUser.isAccountNonExpired()){
+            throw new AccountExpiredException(ResponseCode.USER_ACCOUNT_EXPIRED.getMsg());
+        }
+
+        // 密码过期
+        if (!searchUser.isCredentialsNonExpired()){
+            throw new CredentialsExpiredException(ResponseCode.USER_CREDENTIALS_EXPIRED.getMsg());
+        }
     }
 
     /**
@@ -90,7 +118,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     public void register(LoginVO loginVO) {
         // 如果用户名存在，返回错误
         if (StringUtils.isNotEmpty(searchUserByUsername(loginVO.getUsername()))){
-            throw new ServiceException();
+            throw new ServiceException(ResponseCode.USER_ACCOUNT_ALREADY_EXIST.getMsg());
         }
 
         // 隐藏手机号位数 180****1999
@@ -128,16 +156,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UserDO registerSocialUser(AuthUser authUser) {
         UserDO userDO = new UserDO();
         userDO.setUsername(authUser.getUuid());
         userDO.setNickname(authUser.getUsername());
-        userDO.setPassword(ACCOUNT_DEFAULT_PASSWORD);
+        userDO.setPassword(passwordEncoder.encode(ACCOUNT_DEFAULT_PASSWORD));
         userDO.setAvatar(authUser.getAvatar());
         userDO.setGender(Integer.parseInt(authUser.getGender().getCode()));
         userDO.setRemark(authUser.getRemark());
         this.save(userDO);
         this.assignNormalRole(userDO.getId());
         return userDO;
+    }
+
+    /**
+     * 免密注册
+     * @param registerVO
+     */
+    @Override
+    public void noSecretRegister(RegisterVO registerVO) {
+
     }
 }

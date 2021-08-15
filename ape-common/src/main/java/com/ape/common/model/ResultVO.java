@@ -30,6 +30,9 @@ public class ResultVO<T> implements Serializable {
     }
 
     public static <T> ResultVO<T> OK(T data){
+        if (data instanceof ResponseCode){
+            return new ResultVO<>(Boolean.TRUE, ((ResponseCode) data).getCode(), ((ResponseCode) data).getMsg(), null);
+        }
         return new ResultVO<>(Boolean.TRUE, ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMsg(), data);
     }
 
@@ -38,6 +41,9 @@ public class ResultVO<T> implements Serializable {
     }
 
     public static <T> ResultVO<T> ERROR(T data){
+        if (data instanceof ResponseCode){
+            return new ResultVO<>(Boolean.FALSE, ((ResponseCode) data).getCode(), ((ResponseCode) data).getMsg(), null);
+        }
         return new ResultVO<>(Boolean.FALSE, ResponseCode.ERROR.getCode(), ResponseCode.ERROR.getMsg(), data);
     }
 }

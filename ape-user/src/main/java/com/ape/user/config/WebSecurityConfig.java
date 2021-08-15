@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 
 /**
@@ -28,12 +27,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserServiceImpl userService;
-    @Autowired
-    private CustomLoginSuccessHandler successHandler;
-    @Autowired
-    private CustomLoginFailureHandler failureHandler;
-    @Autowired
-    private CustomLogoutSuccessHandler logoutSuccessHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -71,7 +64,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
+        // 使用这句就不要使用下面这句
+        // auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
         auth.authenticationProvider(authenticationProvider());
     }
 

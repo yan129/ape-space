@@ -2,6 +2,7 @@ package com.ape.user.service;
 
 import com.ape.user.model.UserDO;
 import com.ape.user.vo.LoginVO;
+import com.ape.user.vo.RegisterVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import me.zhyd.oauth.model.AuthUser;
 
@@ -30,4 +31,10 @@ public interface UserService extends IService<UserDO> {
      * @return
      */
     UserDO registerSocialUser(AuthUser authUser);
+
+    /**
+     * 免密注册
+     * @param registerVO
+     */
+    void noSecretRegister(RegisterVO registerVO);
 }

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -20,6 +21,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
+import javax.sql.DataSource;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +48,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private CustomTokenEnhancer tokenEnhancer;
     @Autowired
     private CustomOauthException oauthException;
+    @Autowired
+    private DataSource dataSource;
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -59,12 +63,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.inMemory()
-                .withClient("ape")
-                .secret(passwordEncoder.encode("ape"))
-                .authorizedGrantTypes("authorization_code", "password", "refresh_token")
-                .scopes("all")
-                .autoApprove(true);
+//        clients.inMemory()
+//                .withClient("ape")
+//                .secret(passwordEncoder.encode("ape"))
+//                .authorizedGrantTypes("authorization_code", "password", "refresh_token")
+//                .scopes("all")
+//                .autoApprove(true);
+        // 读取持久化到数据库的客户端授权凭证
+        clients.jdbc(dataSource).passwordEncoder(passwordEncoder);
     }
 
     @Override
@@ -86,10 +92,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         tokenServices.setSupportRefreshToken(true);
         tokenServices.setClientDetailsService(endpoints.getClientDetailsService());
         tokenServices.setTokenEnhancer(tokenEnhancerChain());
-        // 设置access_token有效期
-        tokenServices.setAccessTokenValiditySeconds((int) TimeUnit.SECONDS.toSeconds(500));
+        // 设置access_token有效期，这里持久化到数据库了
+//        tokenServices.setAccessTokenValiditySeconds((int) TimeUnit.SECONDS.toSeconds(500));
         // 设置refresh_token有效期
-        tokenServices.setRefreshTokenValiditySeconds(((int) TimeUnit.SECONDS.toSeconds(1000)));
+//        tokenServices.setRefreshTokenValiditySeconds(((int) TimeUnit.SECONDS.toSeconds(1000)));
         return tokenServices;
     }
 

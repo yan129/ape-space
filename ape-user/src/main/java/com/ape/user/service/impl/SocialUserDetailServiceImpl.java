@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -58,19 +59,25 @@ public class SocialUserDetailServiceImpl extends ServiceImpl<SocialUserDetailMap
 
     @Override
     public OAuth2AccessToken generateToken(UserBO userBO) {
+        Map<String, Object> clientDetail = this.baseMapper.selectOauthClientDetailsByClientId(clientId);
+
         DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
         // 设置生成刷新token
         defaultTokenServices.setSupportRefreshToken(true);
         defaultTokenServices.setTokenStore(jwtTokenStore);
+        // access_token过期时间
+        defaultTokenServices.setAccessTokenValiditySeconds((int) TimeUnit.SECONDS.toSeconds((int)clientDetail.get("access_token_validity")));
+        // refresh_token过期时间
+        defaultTokenServices.setRefreshTokenValiditySeconds((int) TimeUnit.SECONDS.toSeconds((int)clientDetail.get("refresh_token_validity")));
         // 增强token信息
         defaultTokenServices.setTokenEnhancer(tokenEnhancerChain);
 
         Map<String, String> parameters = CollectionHelper.newHashMap();
-        parameters.put("client_id", "ape");
-        parameters.put("client_secret", "ape");
+        parameters.put("client_id", clientId);
+        parameters.put("client_secret", (String) clientDetail.get("client_secret"));
         parameters.put("grant_type", "password");
-        ClientDetails clientDetails = clientDetailsService.loadClientByClientId("ape");
-        TokenRequest tokenRequest = new TokenRequest(parameters, "ape", Collections.singleton("all"),"password");
+        ClientDetails clientDetails = clientDetailsService.loadClientByClientId(clientId);
+        TokenRequest tokenRequest = new TokenRequest(parameters, clientId, Collections.singleton((String) clientDetail.get("scope")), "password");
         OAuth2Request oAuth2Request = tokenRequest.createOAuth2Request(clientDetails);
 
         // 创建UsernamePasswordAuthenticationToken

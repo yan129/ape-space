@@ -3,7 +3,7 @@ package com.ape.user.config;
 import com.ape.common.model.ResponseCode;
 import com.ape.common.model.ResultVO;
 import com.ape.common.utils.HttpResponseUtil;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
