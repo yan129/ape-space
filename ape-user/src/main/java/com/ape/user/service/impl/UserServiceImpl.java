@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.model.AuthUser;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AccountExpiredException;
@@ -176,6 +177,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
      */
     @Override
     public void noSecretRegister(RegisterVO registerVO) {
+        // 先校验验证码
+        // 通过进行注册
+        LoginVO loginVO = new LoginVO();
+        BeanUtils.copyProperties(registerVO, loginVO);
+        loginVO.setPassword(ACCOUNT_DEFAULT_PASSWORD);
 
+        register(loginVO);
     }
 }

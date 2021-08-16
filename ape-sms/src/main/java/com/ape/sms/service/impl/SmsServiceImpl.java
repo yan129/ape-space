@@ -2,6 +2,7 @@ package com.ape.sms.service.impl;
 
 import cn.hutool.json.JSONUtil;
 import com.ape.common.utils.CommonUtil;
+import com.ape.common.utils.StringUtils;
 import com.ape.sms.constant.SmsConstant;
 import com.ape.sms.service.SmsService;
 import com.zhenzi.sms.ZhenziSmsClient;
@@ -57,6 +58,8 @@ public class SmsServiceImpl implements SmsService {
 
     private Map<String, Object> buildSendParams(String telephone) {
         String code = String.valueOf(new Random().nextInt(899999) + 100000);
+        // 给验证码设置当前系统时间
+        code = StringUtils.joinWith("_", code, System.currentTimeMillis());
         String[] templateParams = {code, SmsConstant.EXPIRE};
 
         Map<String, Object> params = new HashMap<>(16);

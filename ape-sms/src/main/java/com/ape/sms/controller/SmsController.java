@@ -38,9 +38,12 @@ public class SmsController {
             return ResultVO.ERROR(SmsConstant.PHONE_CORRECT);
         }
 
-        // 判断缓存中key是否过期
+        // 判断缓存中key是否过期，60秒内返回请勿重复发送
         if (stringRedisTemplate.hasKey(SmsConstant.PREFIX + telephone.trim())){
-            return ResultVO.ERROR(ResponseCode.REPEAT_SEND.getMsg());
+            String value = stringRedisTemplate.opsForValue().get(SmsConstant.PREFIX + telephone.trim());
+            if (System.currentTimeMillis() - Long.parseLong(value) < 60 * 1000){
+                return ResultVO.ERROR(ResponseCode.REPEAT_SEND.getMsg());
+            }
         }
 
         boolean send = smsService.send(telephone);
