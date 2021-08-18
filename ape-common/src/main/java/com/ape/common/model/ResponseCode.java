@@ -20,6 +20,9 @@ public enum ResponseCode {
     REPEAT_SEND(1001, "请勿重复发送"),
     TOKEN_MISSING(1002, "Token缺失"),
 
+    REGISTER_CHECK_CODE(1501, "验证码错误"),
+    REGISTER_CODE_EXPIRED(1502, "验证码过期，请新获取"),
+
 
     USER_LOGIN_FAILURE(2001, "登录失败"),
     USERNAME_NOT_EXIST(2002, "账号不存在"),

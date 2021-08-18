@@ -13,7 +13,9 @@ import com.ape.user.model.RoleDO;
 import com.ape.user.model.UserDO;
 import com.ape.user.mapper.UserMapper;
 import com.ape.user.model.UserRoleDO;
+import com.ape.user.service.SocialUserDetailService;
 import com.ape.user.service.UserService;
+import com.ape.user.social.SocialService;
 import com.ape.user.vo.LoginVO;
 import com.ape.user.vo.RegisterVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -23,6 +25,7 @@ import me.zhyd.oauth.model.AuthUser;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.DisabledException;
@@ -31,6 +34,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +59,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     private RoleMapper roleMapper;
     @Autowired
     private UserRoleMapper userRoleMapper;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private SocialUserDetailService socialUserDetailService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -116,7 +124,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void register(LoginVO loginVO) {
+    public OAuth2AccessToken register(LoginVO loginVO) {
         // 如果用户名存在，返回错误
         if (StringUtils.isNotEmpty(searchUserByUsername(loginVO.getUsername()))){
             throw new ServiceException(ResponseCode.USER_ACCOUNT_ALREADY_EXIST.getMsg());
@@ -133,6 +141,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
         this.save(userDO);
         this.assignNormalRole(userDO.getId());
+
+        UserBO userBO = UserDOMapper.INSTANCE.doToBO(userDO);
+        userBO.setRoles(SocialService.buildRoleList());
+
+        // 注册成功进行登录
+        return socialUserDetailService.generateToken(userBO);
     }
 
     /**
@@ -176,13 +190,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
      * @param registerVO
      */
     @Override
-    public void noSecretRegister(RegisterVO registerVO) {
-        // 先校验验证码
-        // 通过进行注册
+    public OAuth2AccessToken noSecretRegister(RegisterVO registerVO) {
+        String key = PHONE_PREFIX + registerVO.getUsername().trim();
+        String registerCode = stringRedisTemplate.opsForValue().get(key);
+        if (StringUtils.isBlank(registerCode)){
+            throw new ServiceException(ResponseCode.REGISTER_CODE_EXPIRED.getMsg());
+        }
+        if (!StringUtils.equals(registerVO.getCode(), registerCode)){
+            throw new ServiceException(ResponseCode.REGISTER_CHECK_CODE.getMsg());
+        }
+
         LoginVO loginVO = new LoginVO();
         BeanUtils.copyProperties(registerVO, loginVO);
         loginVO.setPassword(ACCOUNT_DEFAULT_PASSWORD);
 
-        register(loginVO);
+        OAuth2AccessToken oAuth2AccessToken = register(loginVO);
+        stringRedisTemplate.delete(key);
+
+        return oAuth2AccessToken;
     }
 }

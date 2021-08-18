@@ -45,7 +45,7 @@ public class SocialUserDetailServiceImpl extends ServiceImpl<SocialUserDetailMap
     /**
      * 在AuthorizationServerConfig配置类中获取jwtTokenStore、tokenEnhancerChain
      */
-    @Autowired()
+    @Autowired
     private TokenStore jwtTokenStore;
     @Autowired
     private TokenEnhancerChain tokenEnhancerChain;

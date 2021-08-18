@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -43,19 +44,19 @@ public class UserController {
     @ApiOperation(value = "用户注册", notes = "用户注册")
     @PostMapping("/register")
     @ApiIdempotent
-    public ResultVO<Void> register(@RequestBody @Valid LoginVO loginVO){
-        userService.register(loginVO);
+    public ResultVO<OAuth2AccessToken> register(@RequestBody @Valid LoginVO loginVO){
+        OAuth2AccessToken oAuth2AccessToken = userService.register(loginVO);
         log.info("用户{}于{}注册成功！", loginVO.getUsername(), DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
-        return ResultVO.OK();
+        return ResultVO.OK(oAuth2AccessToken);
     }
 
     @ApiOperation(value = "免密注册", notes = "免密注册")
     @PostMapping("/noSecretRegister")
     @ApiIdempotent
-    public ResultVO<Void> noSecretRegister(@RequestBody @Valid RegisterVO registerVO){
-        userService.noSecretRegister(registerVO);
+    public ResultVO<OAuth2AccessToken> noSecretRegister(@RequestBody @Valid RegisterVO registerVO){
+        OAuth2AccessToken oAuth2AccessToken = userService.noSecretRegister(registerVO);
         log.info("用户{}于{}注册成功！", registerVO.getUsername(), DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
-        return ResultVO.OK();
+        return ResultVO.OK(oAuth2AccessToken);
     }
 
 }
