@@ -29,11 +29,11 @@ public class IdempotentTokenServiceImpl implements IdempotentTokenService {
         String token = StringUtils.joinWith("-", CACHE_TOKEN_KEY, IpUtil.getIpAddress(request), methodName);
 
         //将token放入redis中，设置有效期为5S，不存在key则设置
-        boolean absent = stringRedisTemplate.opsForValue().setIfAbsent(token, token, TOKEN_VALID_PERIOD, TimeUnit.SECONDS);
+        boolean absent = stringRedisTemplate.opsForValue().setIfAbsent(token, token, (Long) request.getAttribute(EXPIRED_TIME), TimeUnit.SECONDS);
         // 已存在key
         if (!absent){
             // 再次设置刷新key过期时间
-            stringRedisTemplate.opsForValue().set(token, token, TOKEN_VALID_PERIOD, TimeUnit.SECONDS);
+            stringRedisTemplate.opsForValue().set(token, token, (Long) request.getAttribute(EXPIRED_TIME), TimeUnit.SECONDS);
             throw new ServiceException(ResponseCode.REPEAT_SUBMIT.getMsg());
         }
     }
@@ -46,7 +46,7 @@ public class IdempotentTokenServiceImpl implements IdempotentTokenService {
         // 存在token抛异常，请勿重复提交
         if (stringRedisTemplate.hasKey(token)){
             // 再次设置刷新key过期时间
-            stringRedisTemplate.opsForValue().set(token, token, TOKEN_VALID_PERIOD, TimeUnit.SECONDS);
+            stringRedisTemplate.opsForValue().set(token, token, (Long) request.getAttribute(EXPIRED_TIME), TimeUnit.SECONDS);
             throw new ServiceException(ResponseCode.REPEAT_SUBMIT.getMsg());
         }
 

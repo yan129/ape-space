@@ -37,6 +37,7 @@ public class IdempotentTokenInterceptor implements HandlerInterceptor {
             // 获取请求接口的方法名
             String methodName = handlerMethod.getMethod().getName();
             request.setAttribute(IdempotentTokenService.METHOD_NAME_KEY, methodName);
+            request.setAttribute(IdempotentTokenService.EXPIRED_TIME, apiIdempotent.value());
             // 方法抛异常会阻断向下执行
             idempotentTokenService.checkTokenExist(request);
         }

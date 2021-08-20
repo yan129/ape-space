@@ -14,4 +14,10 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiIdempotent {
+
+    /**
+     * 设置幂等性key的过期时间
+     * @return
+     */
+    int value() default 5;
 }

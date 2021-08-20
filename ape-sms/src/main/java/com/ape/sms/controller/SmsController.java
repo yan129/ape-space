@@ -3,6 +3,7 @@ package com.ape.sms.controller;
 import com.ape.common.model.ResponseCode;
 import com.ape.common.model.ResultVO;
 import com.ape.common.utils.CommonUtil;
+import com.ape.common.utils.StringUtils;
 import com.ape.sms.constant.SmsConstant;
 import com.ape.sms.service.SmsService;
 import io.swagger.annotations.Api;
@@ -41,7 +42,7 @@ public class SmsController {
         // 判断缓存中key是否过期，60秒内返回请勿重复发送
         if (stringRedisTemplate.hasKey(SmsConstant.PREFIX + telephone.trim())){
             String value = stringRedisTemplate.opsForValue().get(SmsConstant.PREFIX + telephone.trim());
-            if (System.currentTimeMillis() - Long.parseLong(value) < 60 * 1000){
+            if (System.currentTimeMillis() - Long.parseLong(StringUtils.split(value, "_")[1]) < 60 * 1000){
                 return ResultVO.ERROR(ResponseCode.REPEAT_SEND.getMsg());
             }
         }

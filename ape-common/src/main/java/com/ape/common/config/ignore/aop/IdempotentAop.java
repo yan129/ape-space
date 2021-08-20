@@ -50,6 +50,7 @@ public class IdempotentAop {
     public void doBefore(JoinPoint joinPoint, ApiIdempotent apiIdempotent) throws Throwable {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
+        request.setAttribute(IdempotentTokenService.EXPIRED_TIME, apiIdempotent.value());
         idempotentTokenService.generateToken(request);
     }
 }

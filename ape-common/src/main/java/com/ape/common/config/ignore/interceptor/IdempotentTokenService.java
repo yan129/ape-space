@@ -14,7 +14,7 @@ public interface IdempotentTokenService {
 
     String METHOD_NAME_KEY = "methodName";
     String CACHE_TOKEN_KEY = "idempotent:token";
-    Integer TOKEN_VALID_PERIOD = 5;
+    String EXPIRED_TIME = "expiredTime";
 
     /**
      * 生成token
