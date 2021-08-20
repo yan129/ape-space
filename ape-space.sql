@@ -231,5 +231,5 @@ CREATE TABLE `oauth_client_details`  (
     PRIMARY KEY (`client_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
-INSERT INTO `oauth_client_details` VALUES ('ape', NULL, '$2a$12$VJuJz.FT6PImmXv8mn1Wauj1S218MLPvYWw4CFMJjYAqwJSAmgM1y', 'all', 'password,refresh_token', NULL, NULL, NULL, NULL, NULL, '1');
+INSERT INTO `oauth_client_details` VALUES ('ape', NULL, '$2a$12$VJuJz.FT6PImmXv8mn1Wauj1S218MLPvYWw4CFMJjYAqwJSAmgM1y', 'all', 'authorization_code,password,refresh_token', NULL, NULL, 1000, 84000, NULL, '1');
 

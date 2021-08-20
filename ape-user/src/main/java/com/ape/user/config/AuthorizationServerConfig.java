@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -25,7 +24,6 @@ import javax.sql.DataSource;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by IntelliJ IDEA.
@@ -80,7 +78,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 // 配置加载用户信息的服务
                 .userDetailsService(userService)
 //                .tokenStore(jwtTokenStore())
-                .accessTokenConverter(jwtAccessTokenConverter())
+//                .accessTokenConverter(jwtAccessTokenConverter())
 //                .tokenEnhancer(tokenEnhancerChain())
                 .tokenServices(tokenServices)
                 .exceptionTranslator(oauthException);

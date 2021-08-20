@@ -24,6 +24,9 @@ public class RestAuthenticationEntryPoint implements ServerAuthenticationEntryPo
 
     @Override
     public Mono<Void> commence(ServerWebExchange exchange, AuthenticationException e) {
+        System.out.println(exchange.getRequest().getURI().getPath()+"====");
+        System.out.println(exchange.getRequest().getURI().getRawPath()+"====");
+        System.out.println(e);
         ServerHttpResponse response = exchange.getResponse();
         ResultVO<Object> error = ResultVO.ERROR();
         if (e instanceof InsufficientAuthenticationException){

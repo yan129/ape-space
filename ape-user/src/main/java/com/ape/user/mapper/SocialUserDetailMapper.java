@@ -15,11 +15,4 @@ import java.util.Map;
  */
 public interface SocialUserDetailMapper extends BaseMapper<SocialUserDetailDO> {
 
-    /**
-     * 查找oauth_client_details表信息
-     * @param clientId
-     * @return
-     */
-    Map<String, Object> selectOauthClientDetailsByClientId(String clientId);
-
 }

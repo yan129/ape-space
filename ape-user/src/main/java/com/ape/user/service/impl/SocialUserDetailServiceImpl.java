@@ -26,7 +26,6 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -59,25 +58,24 @@ public class SocialUserDetailServiceImpl extends ServiceImpl<SocialUserDetailMap
 
     @Override
     public OAuth2AccessToken generateToken(UserBO userBO) {
-        Map<String, Object> clientDetail = this.baseMapper.selectOauthClientDetailsByClientId(clientId);
+        ClientDetails clientDetails = clientDetailsService.loadClientByClientId(clientId);
 
         DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
         // 设置生成刷新token
         defaultTokenServices.setSupportRefreshToken(true);
         defaultTokenServices.setTokenStore(jwtTokenStore);
         // access_token过期时间
-        defaultTokenServices.setAccessTokenValiditySeconds((int) TimeUnit.SECONDS.toSeconds((int)clientDetail.get("access_token_validity")));
+        defaultTokenServices.setAccessTokenValiditySeconds((int) TimeUnit.SECONDS.toSeconds(clientDetails.getAccessTokenValiditySeconds()));
         // refresh_token过期时间
-        defaultTokenServices.setRefreshTokenValiditySeconds((int) TimeUnit.SECONDS.toSeconds((int)clientDetail.get("refresh_token_validity")));
+        defaultTokenServices.setRefreshTokenValiditySeconds((int) TimeUnit.SECONDS.toSeconds(clientDetails.getRefreshTokenValiditySeconds()));
         // 增强token信息
         defaultTokenServices.setTokenEnhancer(tokenEnhancerChain);
 
         Map<String, String> parameters = CollectionHelper.newHashMap();
         parameters.put("client_id", clientId);
-        parameters.put("client_secret", (String) clientDetail.get("client_secret"));
+        parameters.put("client_secret", clientDetails.getClientSecret());
         parameters.put("grant_type", "password");
-        ClientDetails clientDetails = clientDetailsService.loadClientByClientId(clientId);
-        TokenRequest tokenRequest = new TokenRequest(parameters, clientId, Collections.singleton((String) clientDetail.get("scope")), "password");
+        TokenRequest tokenRequest = new TokenRequest(parameters, clientId, clientDetails.getScope(), "password");
         OAuth2Request oAuth2Request = tokenRequest.createOAuth2Request(clientDetails);
 
         // 创建UsernamePasswordAuthenticationToken
@@ -126,6 +124,7 @@ public class SocialUserDetailServiceImpl extends ServiceImpl<SocialUserDetailMap
                 List<RoleDO> roles = roleMapper.searchAllRoleByUid(detailDO.getId());
                 UserBO userBO = UserDOMapper.INSTANCE.doToBO(detailDO);
                 userBO.setRoles(roles);
+                ((UserServiceImpl) userService).loginException(userBO);
                 return this.generateToken(userBO);
             }
         }

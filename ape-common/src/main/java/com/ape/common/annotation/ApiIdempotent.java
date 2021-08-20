@@ -19,5 +19,5 @@ public @interface ApiIdempotent {
      * 设置幂等性key的过期时间
      * @return
      */
-    int value() default 5;
+    long value() default 5;
 }

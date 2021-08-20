@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloController {
 
-    @GetMapping("/ape/hello")
+    @GetMapping("/role/hello")
     public String hello() {
         return "hello success !!!";
     }

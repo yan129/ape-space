@@ -53,7 +53,7 @@ public class UserDO extends BaseEntity {
     @Length(max = 150, message = "简介大于150个字符")
     private String profile;
 
-    @ApiModelProperty(value = "性别，默认 1 为男，0 为女")
+    @ApiModelProperty(value = "性别，默认 1 为男，0 为女，-1为未知")
     private Integer gender;
 
     @ApiModelProperty(value = "账号是否可用，默认 1 为可用，0 不可用")
