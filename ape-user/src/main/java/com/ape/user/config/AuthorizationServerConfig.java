@@ -43,8 +43,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private UserServiceImpl userService;
     @Autowired
-    private CustomTokenEnhancer tokenEnhancer;
-    @Autowired
     private CustomOauthException oauthException;
     @Autowired
     private DataSource dataSource;
@@ -120,7 +118,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         TokenEnhancerChain enhancerChain = new TokenEnhancerChain();
 
         List<TokenEnhancer> delegates = new ArrayList<>();
-        delegates.add(tokenEnhancer);
+        // 必须 new 对象，使用component和autowired注入使用会报错
+        delegates.add(new CustomTokenEnhancer());
         delegates.add(jwtAccessTokenConverter());
         // 配置JWT的内容增强
         enhancerChain.setTokenEnhancers(delegates);

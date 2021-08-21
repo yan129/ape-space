@@ -42,4 +42,15 @@ public class SocialFactoryProducer extends SocialFactory {
         }
         return null;
     }
+
+    @Override
+    public SocialService getSocialService(String source) {
+        if (StringUtils.equalsIgnoreCase(SocialFactory.GITHUB_SOURCE, source)){
+            return gitHubSocialService;
+        }
+        if (StringUtils.equalsIgnoreCase(SocialFactory.GITEE_SOURCE, source)){
+            return giteeSocialService;
+        }
+        return null;
+    }
 }

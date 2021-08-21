@@ -28,4 +28,11 @@ public abstract class SocialFactory {
      * @return
      */
     public abstract OAuth2AccessToken obtainOAuth2AccessToken(String code, String state, String source);
+
+    /**
+     * 获取 SocialService
+     * @param source
+     * @return
+     */
+    public abstract SocialService getSocialService(String source);
 }

@@ -25,6 +25,7 @@ public interface UserService extends IService<UserDO> {
     /**
      * 用户注册
      * @param loginVO
+     * @return OAuth2AccessToken
      */
     OAuth2AccessToken register(LoginVO loginVO);
 
@@ -38,6 +39,7 @@ public interface UserService extends IService<UserDO> {
     /**
      * 免密注册
      * @param registerVO
+     * @return OAuth2AccessToken
      */
     OAuth2AccessToken noSecretRegister(RegisterVO registerVO);
 }

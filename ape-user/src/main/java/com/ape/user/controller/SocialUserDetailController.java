@@ -40,14 +40,14 @@ public class SocialUserDetailController {
     @SneakyThrows
     @GetMapping("/github/login")
     public void gitHubLogin(HttpServletResponse response){
-        response.sendRedirect(socialFactoryProducer.obtainUrl(SocialFactory.GITHUB_SOURCE));
+        response.sendRedirect(socialFactoryProducer.getSocialService(SocialFactory.GITHUB_SOURCE).buildLoginUrl());
     }
 
     @ApiOperation(value = "GitHub登录回调拦截请求", notes = "GitHub登录回调拦截请求")
     @GetMapping("/github/callback")
     @ResponseBody
     public ResultVO<OAuth2AccessToken> gitHubCallback(@RequestParam("code") String code, @RequestParam("state") String state){
-        OAuth2AccessToken oAuth2AccessToken = socialFactoryProducer.obtainOAuth2AccessToken(code, state, SocialFactory.GITHUB_SOURCE);
+        OAuth2AccessToken oAuth2AccessToken = socialFactoryProducer.getSocialService(SocialFactory.GITHUB_SOURCE).buildOAuth2AccessToken(code, state);
         return ResultVO.OK(oAuth2AccessToken);
     }
 
@@ -57,14 +57,14 @@ public class SocialUserDetailController {
     @SneakyThrows
     @GetMapping("/gitee/login")
     public void giteeLogin(HttpServletResponse response){
-        response.sendRedirect(socialFactoryProducer.obtainUrl(SocialFactory.GITEE_SOURCE));
+        response.sendRedirect(socialFactoryProducer.getSocialService(SocialFactory.GITEE_SOURCE).buildLoginUrl());
     }
 
     @ApiOperation(value = "Gitee登录回调拦截请求", notes = "Gitee登录回调拦截请求")
     @GetMapping("/gitee/callback")
     @ResponseBody
     public ResultVO<OAuth2AccessToken> giteeCallback(@RequestParam("code") String code, @RequestParam("state") String state){
-        OAuth2AccessToken oAuth2AccessToken = socialFactoryProducer.obtainOAuth2AccessToken(code, state, SocialFactory.GITEE_SOURCE);
+        OAuth2AccessToken oAuth2AccessToken = socialFactoryProducer.getSocialService(SocialFactory.GITEE_SOURCE).buildOAuth2AccessToken(code, state);
         return ResultVO.OK(oAuth2AccessToken);
     }
 
