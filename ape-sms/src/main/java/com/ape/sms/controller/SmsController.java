@@ -34,7 +34,7 @@ public class SmsController {
     @ApiOperation(value = "发送短信", notes = "发送短信")
     @PostMapping("/send/{telephone}")
     public ResultVO<String> send(@ApiParam("手机号码") @PathVariable("telephone") String telephone){
-        boolean telRegex = CommonUtil.TelephoneRegex(telephone);
+        boolean telRegex = CommonUtil.telephoneRegex(telephone);
         if (!telRegex){
             return ResultVO.ERROR(SmsConstant.PHONE_CORRECT);
         }

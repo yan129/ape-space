@@ -48,7 +48,7 @@ public class SmsServiceImpl implements SmsService {
     @Override
     public boolean send(String telephone) {
         telephone = telephone.trim();
-        if (!CommonUtil.TelephoneRegex(telephone)) {
+        if (!CommonUtil.telephoneRegex(telephone)) {
             log.error("手机号码格式错误");
             return false;
         }

@@ -68,7 +68,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     @Transactional(rollbackFor = Exception.class)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // 因为设计上该用户表保存了第三方登录账号，所以要限制能使用第三方账号的用户名密码登录，要判断是不是手机号登录
-        if (!CommonUtil.TelephoneRegex(username)) {
+        if (!CommonUtil.telephoneRegex(username)) {
             throw new UsernameNotFoundException(ResponseCode.USERNAME_NOT_EXIST.getMsg());
         }
         UserDO searchUser = searchUserByUsername(username);
