@@ -2,8 +2,6 @@ package com.ape.common.utils;
 
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.json.JSON;
-import cn.hutool.json.JSONUtil;
 
 import javax.servlet.ServletRequest;
 import java.util.Enumeration;
