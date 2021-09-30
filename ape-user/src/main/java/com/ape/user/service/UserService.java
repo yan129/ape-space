@@ -7,6 +7,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import me.zhyd.oauth.model.AuthUser;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
+import java.io.IOException;
+import java.util.Map;
+
 /**
  * <p>
  * 用户表 服务类
@@ -42,4 +45,10 @@ public interface UserService extends IService<UserDO> {
      * @return OAuth2AccessToken
      */
     OAuth2AccessToken noSecretRegister(RegisterVO registerVO);
+
+    /**
+     * 获取图形验证码
+     * @return
+     */
+    Map<String, Object> getCaptchaImg() throws IOException;
 }

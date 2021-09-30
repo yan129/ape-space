@@ -1,7 +1,7 @@
 server:
   port: 9526
   servlet:
-    context-path: /ape-space
+    context-path: /ape-user-server
 
 spring:
   application:
@@ -43,9 +43,10 @@ mybatis-plus:
 eureka:
   client:
     service-url:
-      defaultZone: http://127.0.0.1:7001/eureka,http://127.0.0.1:7002/eureka
+      defaultZone: http://${eureka.instance.hostname}:7001/eureka,http://${eureka.instance.hostname}:7002/eureka
   instance:
     prefer-ip-address: true
+    hostname: 127.0.0.1
 
 # feign配置
 feign:

@@ -25,6 +25,7 @@ public class RestAccessDeniedHandler implements ServerAccessDeniedHandler {
     public Mono<Void> handle(ServerWebExchange exchange, AccessDeniedException e) {
         ServerHttpResponse response = exchange.getResponse();
         ResultVO<ResponseCode> error = ResultVO.ERROR(ResponseCode.FORBIDDEN);
+        // AuthenticationCredentialsNotFoundException 权限不足
         return HttpResponseUtil.MonoOutput(response, error);
     }
 }

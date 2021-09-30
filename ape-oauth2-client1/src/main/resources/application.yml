@@ -1,5 +1,7 @@
 server:
   port: 9531
+  servlet:
+    context-path: /ape-client
 
 #auth-server: http://localhost:9526/ape-space
 

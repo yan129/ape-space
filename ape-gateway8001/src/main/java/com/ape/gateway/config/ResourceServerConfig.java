@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -52,7 +53,7 @@ public class ResourceServerConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http){
         // 对白名单路径，直接移除JWT请求头
-        //http.addFilterBefore(ignoreUrlsJwtHeaderFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+        // http.addFilterBefore(ignoreUrlsJwtHeaderFilter, SecurityWebFiltersOrder.AUTHENTICATION);
                 http.authorizeExchange()
                 // 白名单配置
                 .pathMatchers(ArrayUtil.toArray(ignoreUrlsConfig.getUrls(), String.class)).permitAll()

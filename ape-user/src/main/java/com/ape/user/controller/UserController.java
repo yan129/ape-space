@@ -2,8 +2,10 @@ package com.ape.user.controller;
 
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.IdUtil;
 import com.ape.common.annotation.ApiIdempotent;
 import com.ape.common.model.ResultVO;
+import com.ape.common.utils.CaptchaUtil;
 import com.ape.user.service.UserService;
 import com.ape.user.vo.LoginVO;
 import com.ape.user.vo.RegisterVO;
@@ -15,8 +17,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * <p>
@@ -36,7 +42,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/bb")
-    @PreAuthorize("hasAuthority('ROLE_NORMAL')")
+//    @PreAuthorize("hasAuthority('ROLE_NORMAL')")
     public ResultVO<String> aa(){
         return ResultVO.OK("aabb");
     }
@@ -51,12 +57,25 @@ public class UserController {
     }
 
     @ApiOperation(value = "免密注册", notes = "免密注册")
+
     @PostMapping("/noSecretRegister")
     @ApiIdempotent
     public ResultVO<OAuth2AccessToken> noSecretRegister(@RequestBody @Valid RegisterVO registerVO){
         OAuth2AccessToken oAuth2AccessToken = userService.noSecretRegister(registerVO);
         log.info("用户{}于{}注册成功！", registerVO.getUsername(), DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
         return ResultVO.OK(oAuth2AccessToken);
+    }
+
+    @ApiOperation(value = "获取图形验证码", notes = "获取图形验证码")
+    @GetMapping("/captchaImg")
+    public ResultVO<Map<String, Object>> getCaptchaImg(HttpServletResponse response) throws IOException {
+//        response.setDateHeader("Expires",0);
+//        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+//        // 设置响应头信息，告诉浏览器不要缓存此内容
+//        response.setHeader("Pragma", "No-cache");
+//        response.setContentType("image/jpeg");
+        Map<String, Object> captchaImg = userService.getCaptchaImg();
+        return ResultVO.OK(captchaImg);
     }
 
 }

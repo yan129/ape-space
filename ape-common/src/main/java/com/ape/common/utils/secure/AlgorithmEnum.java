@@ -8,6 +8,7 @@ package com.ape.common.utils.secure;
  */
 public enum AlgorithmEnum {
 
-    ECIES;
+    ECIES,
+    SM2;
 
 }

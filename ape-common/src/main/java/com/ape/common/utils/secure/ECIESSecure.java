@@ -1,6 +1,5 @@
 package com.ape.common.utils.secure;
 
-import cn.hutool.core.codec.Base64;
 import org.bouncycastle.jce.interfaces.ECPrivateKey;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -25,18 +24,18 @@ import java.security.*;
  *
  * 使用Bouncy Castle算法库加解密ECIES椭圆曲线密码
  */
-public class EciesSecure implements Secure {
+public class ECIESSecure implements Secure {
 
-    private static final Logger log = LoggerFactory.getLogger(EciesSecure.class);
+    private static final Logger log = LoggerFactory.getLogger(ECIESSecure.class);
 
-    private static final String ALGORITHM = "ECIES";
+    public static final String ECIES = "ECIES";
     private ECPrivateKey ecPrivateKey;
     private ECPublicKey ecPublicKey;
     private Cipher cipher;
 
-    public EciesSecure() throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
+    public ECIESSecure() throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
         Security.addProvider(new BouncyCastleProvider());
-        cipher = Cipher.getInstance(ALGORITHM, "BC");
+        cipher = Cipher.getInstance(ECIES, "BC");
         keyGenerator();
     }
 
@@ -51,7 +50,7 @@ public class EciesSecure implements Secure {
     }
 
     private void keyGenerator() throws NoSuchProviderException, NoSuchAlgorithmException {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(ALGORITHM, "BC");
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(ECIES, "BC");
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
         ecPublicKey = (ECPublicKey) keyPair.getPublic();
         ecPrivateKey = (ECPrivateKey) keyPair.getPrivate();
@@ -64,9 +63,9 @@ public class EciesSecure implements Secure {
      * @return
      */
     @Override
-    public String encryptData(String data, PublicKey publicKey) {
+    public String encryptData(String data, Object publicKey) {
         try {
-            cipher.init(Cipher.ENCRYPT_MODE, ecPublicKey);
+            cipher.init(Cipher.ENCRYPT_MODE, ((ECPublicKey) publicKey));
             byte[] doFinal = cipher.doFinal(data.getBytes());
             String marshal = new HexBinaryAdapter().marshal(doFinal);
 
@@ -74,7 +73,7 @@ public class EciesSecure implements Secure {
             return marshal;
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             log.error(e.getMessage());
-            throw new RuntimeException(ALGORITHM + "加密失败");
+            throw new RuntimeException(ECIES + "加密失败");
         }
     }
 
@@ -85,10 +84,9 @@ public class EciesSecure implements Secure {
      * @return
      */
     @Override
-    public String decryptData(String encryptData, PrivateKey privateKey) {
+    public String decryptData(String encryptData, Object privateKey) {
         try {
-            System.out.println(encryptData);
-            cipher.init(Cipher.DECRYPT_MODE, ecPrivateKey);
+            cipher.init(Cipher.DECRYPT_MODE, ((ECPrivateKey) privateKey));
             byte[] cipherText = new HexBinaryAdapter().unmarshal(encryptData);
             byte[] doFinal = cipher.doFinal(cipherText);
 
@@ -97,7 +95,7 @@ public class EciesSecure implements Secure {
             return plainText;
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             log.error(e.getMessage());
-            throw new RuntimeException(ALGORITHM + "解密失败");
+            throw new RuntimeException(ECIES + "解密失败");
         }
     }
 
@@ -116,6 +114,7 @@ public class EciesSecure implements Secure {
         BigInteger pointY = basePoint.getAffineYCoord().toBigInteger();
         BigInteger pubX = ecPublicKey.getQ().getAffineXCoord().toBigInteger();
         BigInteger pubY = ecPublicKey.getQ().getAffineYCoord().toBigInteger();
+        String publicKey = new HexBinaryAdapter().marshal(ecPublicKey.getQ().getEncoded(false));
 
         String algorithm = ecPublicKey.getAlgorithm();
         StringBuilder sb = new StringBuilder();
@@ -127,7 +126,8 @@ public class EciesSecure implements Secure {
         sb.append("基点纵坐标 = ").append(pointY).append("\n");
         sb.append("公钥横坐标 = ").append(pubX).append("\n");
         sb.append("公钥纵坐标 = ").append(pubY).append("\n");
-        sb.append("私钥 = ").append(ecPrivateKey.getD()).append("\n");
+        sb.append("私钥 = ").append(ecPrivateKey.getD().toString(16)).append("\n");
+        sb.append("公钥 = ").append(publicKey).append("\n");
         System.out.println(sb.toString());
     }
 }

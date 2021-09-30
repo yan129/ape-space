@@ -1,8 +1,10 @@
 package com.ape.user.service.impl;
 
 import cn.hutool.core.util.DesensitizedUtil;
+import cn.hutool.core.util.IdUtil;
 import com.ape.common.exception.ServiceException;
 import com.ape.common.model.ResponseCode;
+import com.ape.common.utils.CaptchaUtil;
 import com.ape.common.utils.CommonUtil;
 import com.ape.common.utils.StringUtils;
 import com.ape.user.bo.UserBO;
@@ -22,6 +24,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.model.AuthUser;
+import org.hibernate.validator.internal.util.CollectionHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -38,7 +41,11 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -208,5 +215,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         stringRedisTemplate.delete(key);
 
         return oAuth2AccessToken;
+    }
+
+    /**
+     * 获取图形验证码
+     * @return
+     */
+    @Override
+    public Map<String, Object> getCaptchaImg() throws IOException {
+        String uuid = IdUtil.fastSimpleUUID();
+        CaptchaUtil captchaUtil = CaptchaUtil.newInstance();
+        BufferedImage image = captchaUtil.getImage();
+        String text = captchaUtil.getText();
+        stringRedisTemplate.opsForValue().set(CaptchaUtil.PREFIX + uuid, text, CaptchaUtil.EXPIRE_TIME, TimeUnit.SECONDS);
+        Map<String, Object> map = CollectionHelper.newHashMap();
+        map.put("uuid", CaptchaUtil.PREFIX + uuid);
+        map.put("img", captchaUtil.output(image));
+        return map;
     }
 }

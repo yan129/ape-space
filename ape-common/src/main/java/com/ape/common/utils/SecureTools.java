@@ -1,23 +1,19 @@
 package com.ape.common.utils;
 
+import cn.hutool.core.codec.Base64;
 import com.ape.common.utils.secure.AlgorithmEnum;
-import com.ape.common.utils.secure.EciesSecure;
+import com.ape.common.utils.secure.ECIESSecure;
+import com.ape.common.utils.secure.SM2Secure;
 import com.ape.common.utils.secure.Secure;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.jce.interfaces.ECPrivateKey;
-import org.bouncycastle.jce.interfaces.ECPublicKey;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.math.ec.ECCurve;
-import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.crypto.CryptoException;
 import org.springframework.util.Assert;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-import java.math.BigInteger;
 import java.security.*;
+import org.bouncycastle.jce.interfaces.ECPrivateKey;
+import org.bouncycastle.jce.interfaces.ECPublicKey;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,69 +26,66 @@ import java.security.*;
 @Slf4j
 public class SecureTools {
 
-    public static void main(String[] args) throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+    public static void main(String[] args) {
+
+
+//        bb();
+//        bb();
+//        bb();
+//        bb();
+
+        aa();
+//        for (int i = 0; i < 100; i++) {
+//            aa();
+//        }
+
+    }
+
+    private static void aa(){
+        long sm2start = System.currentTimeMillis();
+        SM2Secure sm2Secure = ((SM2Secure) execute(AlgorithmEnum.SM2));
+        String data = sm2Secure.encryptData("helljhdioqhdoiahdo   jeo", sm2Secure.getEcPublicKey());
+        sm2Secure.decryptData(data, sm2Secure.getEcPrivateKey());
+        sm2Secure.printSM2Info(sm2Secure.getEcPublicKey(), sm2Secure.getEcPrivateKey());
+        long sm2stop = System.currentTimeMillis();
+        System.out.println(sm2stop - sm2start);
+
+        try {
+            byte[] signs = sm2Secure.sign("sign", sm2Secure.getEcPrivateKey());
+            System.out.println("sing = " + new HexBinaryAdapter().marshal(signs));
+            boolean verify = sm2Secure.verify("sign", signs, sm2Secure.getEcPublicKey());
+            System.out.println(verify);
+        } catch (CryptoException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void bb(){
         long start = System.currentTimeMillis();
-
         Secure secure = execute(AlgorithmEnum.ECIES);
-        String hello = secure.encryptData("hello", secure.getPublicKey());
-        String aa = "041C6126E2841360C1CE031E144C472A3E3F5B1CCA6D4A910B056A633538EC5488959E5250D78DA45072B048CA957B2E506478E448FAC818338F5DD3263DCA866266A9AF66F9BCB990B6AE15F5BA089DF07A3349B063";
-        String decryptData = secure.decryptData(aa, secure.getPrivateKey());
-
+        String hello = secure.encryptData("helljhdioqhdoiahdo   jeo", secure.getPublicKey());
+        String decryptData = secure.decryptData(hello, secure.getPrivateKey());
+        ((ECIESSecure) secure).printECCurveInfo(((ECPublicKey) secure.getPublicKey()), ((ECPrivateKey) secure.getPrivateKey()));
         long stop = System.currentTimeMillis();
         System.out.println(stop - start);
-
-        System.out.println("==========");
-
-        byte[] plainText = "Hello World!".getBytes();
-        byte[] cipherText = null;
-
-        Security.addProvider(new BouncyCastleProvider());
-        //生成公钥和私钥
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ECIES", "BC");
-        KeyPair keyPair = keyPairGenerator.generateKeyPair();
-        ECPublicKey ecPublicKey = (ECPublicKey) keyPair.getPublic();
-        ECPrivateKey ecPrivateKey = (ECPrivateKey) keyPair.getPrivate();
-        //打印密钥信息
-        ECCurve ecCurve = ecPublicKey.getParameters().getCurve();
-        System.out.println("椭圆曲线参数a = " + ecCurve.getA().toBigInteger());
-        System.out.println("椭圆曲线参数b = " + ecCurve.getB().toBigInteger());
-        System.out.println("椭圆曲线参数q = " + ((ECCurve.Fp) ecCurve).getQ());
-        ECPoint basePoint = ecPublicKey.getParameters().getG();
-        System.out.println("基点橫坐标             "
-                + basePoint.getAffineXCoord().toBigInteger());
-        System.out.println("基点纵坐标             "
-                + basePoint.getAffineYCoord().toBigInteger());
-        System.out.println("公钥横坐标             "
-                + ecPublicKey.getQ().getAffineXCoord().toBigInteger());
-        System.out.println("公钥纵坐标             "
-                + ecPublicKey.getQ().getAffineYCoord().toBigInteger());
-        System.out.println("私钥                        " + ecPrivateKey.getD());
-
-        Cipher cipher = Cipher.getInstance("ECIES", "BC");
-        // 加密
-        cipher.init(Cipher.ENCRYPT_MODE, ecPublicKey);
-        cipherText = cipher.doFinal(plainText);
-        System.out.println("密文: " + new HexBinaryAdapter().marshal(cipherText));
-
-        // 解密
-        cipher.init(Cipher.DECRYPT_MODE, ecPrivateKey);
-        plainText = cipher.doFinal(cipherText);
-        // 打印解密后的明文
-        System.out.println("解密后的明文: " + new String(plainText));
     }
 
     static Secure execute(AlgorithmEnum algorithmEnum) {
-        System.out.println(algorithmEnum.name() + "====");
         Assert.notNull(algorithmEnum, "Please select the algorithm to be used");
-        if (StringUtils.equalsIgnoreCase(algorithmEnum.name(), "ECIES")){
+        if (StringUtils.equalsIgnoreCase(algorithmEnum.name(), ECIESSecure.ECIES)){
             try {
-                return new EciesSecure();
-            } catch (NoSuchPaddingException e) {
+                return new ECIESSecure();
+            } catch (NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException e) {
                 e.printStackTrace();
+                log.error(e.getMessage());
+            }
+        }
+        if (StringUtils.equalsIgnoreCase(algorithmEnum.name(), SM2Secure.SM2)){
+            try {
+                return new SM2Secure();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
-            } catch (NoSuchProviderException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
         throw new RuntimeException("Algorithm initialization failed");

@@ -51,43 +51,6 @@ public class EcdsaUtil {
 
     public static void main(String[] args) throws Exception {
 
-
-//        byte[] plainText = "Hello World!".getBytes();
-//        byte[] cipherText = null;
-//
-//        Security.addProvider(new BouncyCastleProvider());
-//        //生成公钥和私钥
-//        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ECIES", "BC");
-//        KeyPair keyPair = keyPairGenerator.generateKeyPair();
-//        ECPublicKey ecPublicKey = (ECPublicKey) keyPair.getPublic();
-//        ECPrivateKey ecPrivateKey = (ECPrivateKey) keyPair.getPrivate();
-//        //打印密钥信息
-//        ECCurve ecCurve = ecPublicKey.getParameters().getCurve();
-//        System.out.println("椭圆曲线参数a = " + ecCurve.getA().toBigInteger());
-//        System.out.println("椭圆曲线参数b = " + ecCurve.getB().toBigInteger());
-//        System.out.println("椭圆曲线参数q = " + ((ECCurve.Fp) ecCurve).getQ());
-//        ECPoint basePoint = ecPublicKey.getParameters().getG();
-//        System.out.println("基点橫坐标             "
-//                + basePoint.getAffineXCoord().toBigInteger());
-//        System.out.println("基点纵坐标             "
-//                + basePoint.getAffineYCoord().toBigInteger());
-//        System.out.println("公钥横坐标             "
-//                + ecPublicKey.getQ().getAffineXCoord().toBigInteger());
-//        System.out.println("公钥纵坐标             "
-//                + ecPublicKey.getQ().getAffineYCoord().toBigInteger());
-//        System.out.println("私钥                        " + ecPrivateKey.getD());
-//
-//        Cipher cipher = Cipher.getInstance("ECIES", "BC");
-//        // 加密
-//        cipher.init(Cipher.ENCRYPT_MODE, ecPublicKey);
-//        cipherText = cipher.doFinal(plainText);
-//        System.out.println("密文: " + new HexBinaryAdapter().marshal(cipherText));
-//        // 解密
-//        cipher.init(Cipher.DECRYPT_MODE, ecPrivateKey);
-//        plainText = cipher.doFinal(cipherText);
-//        // 打印解密后的明文
-//        System.out.println("解密后的明文: " + new String(plainText));
-
 //        生成公钥私钥
         KeyPair keyPair1 = getKeyPair();
         PublicKey publicKey1 = keyPair1.getPublic();
@@ -108,37 +71,37 @@ public class EcdsaUtil {
 //
         long start = System.currentTimeMillis();
 
-        //生成密钥对
-//        X9ECParameters sm2ECParameters = GMNamedCurves.getByName("sm2p256v1");
-//        ECDomainParameters domainParameters = new ECDomainParameters(sm2ECParameters.getCurve(), sm2ECParameters.getG(), sm2ECParameters.getN());
-//        ECKeyPairGenerator keyPairGenerator = new ECKeyPairGenerator();
-//        keyPairGenerator.init(new ECKeyGenerationParameters(domainParameters, SecureRandom.getInstance("SHA1PRNG")));
-//        AsymmetricCipherKeyPair asymmetricCipherKeyPair = keyPairGenerator.generateKeyPair();
-//
-//        //私钥，16进制格式，自己保存，格式如a2081b5b81fbea0b6b973a3ab6dbbbc65b1164488bf22d8ae2ff0b8260f64853
-//        BigInteger privatekey = ((ECPrivateKeyParameters) asymmetricCipherKeyPair.getPrivate()).getD();
-//        String privateKeyHex = privatekey.toString(16);
-//
-////公钥，16进制格式，发给前端，格式如04813d4d97ad31bd9d18d785f337f683233099d5abed09cb397152d50ac28cc0ba43711960e811d90453db5f5a9518d660858a8d0c57e359a8bf83427760ebcbba
-//        ECPoint ecPoint = ((ECPublicKeyParameters) asymmetricCipherKeyPair.getPublic()).getQ();
-//        String publicKeyHex = Hex.toHexString(ecPoint.getEncoded(false));
+        // 生成密钥对
+        X9ECParameters sm2ECParameters = GMNamedCurves.getByName("sm2p256v1");
+        ECDomainParameters domainParameters = new ECDomainParameters(sm2ECParameters.getCurve(), sm2ECParameters.getG(), sm2ECParameters.getN());
+        ECKeyPairGenerator keyPairGenerator = new ECKeyPairGenerator();
+        keyPairGenerator.init(new ECKeyGenerationParameters(domainParameters, SecureRandom.getInstance("SHA1PRNG")));
+        AsymmetricCipherKeyPair asymmetricCipherKeyPair = keyPairGenerator.generateKeyPair();
+
+        //私钥，16进制格式，自己保存，格式如a2081b5b81fbea0b6b973a3ab6dbbbc65b1164488bf22d8ae2ff0b8260f64853
+        BigInteger privatekey = ((ECPrivateKeyParameters) asymmetricCipherKeyPair.getPrivate()).getD();
+        String privateKeyHex = privatekey.toString(16);
+
+//公钥，16进制格式，发给前端，格式如04813d4d97ad31bd9d18d785f337f683233099d5abed09cb397152d50ac28cc0ba43711960e811d90453db5f5a9518d660858a8d0c57e359a8bf83427760ebcbba
+        ECPoint ecPoint = ((ECPublicKeyParameters) asymmetricCipherKeyPair.getPublic()).getQ();
+        String publicKeyHex = Hex.toHexString(ecPoint.getEncoded(false));
 
 //        byte[] encrypt = encryptByPublicKey("aa".getBytes(), publicKey1);
 //        System.out.println(new String(encrypt));
 //        System.out.println(new String(decryptByPrivateKey(encrypt, privateKey1)));
 
-        String text = "我是一段测试aaaa127318y31123213123121ed21d123123213213";
-//
-        SM2 sm2 = SmUtil.sm2();
-        System.out.println(((ECPublicKey) sm2.getPublicKey()).getQ().getAffineXCoord());
-        System.out.println(((ECPublicKey) sm2.getPublicKey()).getQ().getAffineYCoord());
-//
-//        // 公钥加密，私钥解密
-        String encryptStr = sm2.encryptBcd(text, KeyType.PublicKey);
-//        System.out.println(encryptStr);
-//        String aa = "0463038A44F1CE02DE9CE77F28559F179EEB907C4070ADA2C8733B406F6AB3B4746EA4FA786D6028CBE1E61D3279070F01654B08F26CF1AD79943ED0F48076124C0A5916F01D082DBA6B2A756BFE011AB3C418CB67630DCB25172E4EBB7A971968BF242BCDD9EF6E0F57046AA06B8AF134674EA882F65F091DB213503D0644DBBEDE5DF44D26E2D18D024E5C8539E588197F61FF8BEC831B941D3A77C3";
-        String decryptStr = StrUtil.utf8Str(sm2.decryptFromBcd(encryptStr, KeyType.PrivateKey));
-        System.out.println(decryptStr);
+//        String text = "我是一段测试aaaa127318y31123213123121ed21d123123213213";
+////
+//        SM2 sm2 = SmUtil.sm2();
+//        System.out.println(((ECPublicKey) sm2.getPublicKey()).getQ().getAffineXCoord());
+//        System.out.println(((ECPublicKey) sm2.getPublicKey()).getQ().getAffineYCoord());
+////
+////        // 公钥加密，私钥解密
+//        String encryptStr = sm2.encryptBcd(text, KeyType.PublicKey);
+////        System.out.println(encryptStr);
+////        String aa = "0463038A44F1CE02DE9CE77F28559F179EEB907C4070ADA2C8733B406F6AB3B4746EA4FA786D6028CBE1E61D3279070F01654B08F26CF1AD79943ED0F48076124C0A5916F01D082DBA6B2A756BFE011AB3C418CB67630DCB25172E4EBB7A971968BF242BCDD9EF6E0F57046AA06B8AF134674EA882F65F091DB213503D0644DBBEDE5DF44D26E2D18D024E5C8539E588197F61FF8BEC831B941D3A77C3";
+//        String decryptStr = StrUtil.utf8Str(sm2.decryptFromBcd(encryptStr, KeyType.PrivateKey));
+//        System.out.println(decryptStr);
         long stop = System.currentTimeMillis();
         System.out.println(stop - start);
 

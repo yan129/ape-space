@@ -14,5 +14,5 @@ oauth2:
     clientId: b92a75f25606f57bd2186a4f655d3cee0256d7e7a05af05238732828743ef237
     clientSecret: 6edb633cea0d4772d593da351d776af8d7849a37a2bc1d1f720c67ece34e47b8
     authorizeUrl: https://gitee.com/oauth/authorize
-    redirectUrl: http://localhost:9526/ape-space/oauth2/gitee/callback
+    redirectUrl: http://localhost:9526/ape-user/oauth2/gitee/callback
 

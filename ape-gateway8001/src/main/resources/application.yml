@@ -46,10 +46,10 @@ spring:
           enabled: true #开启从注册中心动态创建路由的功能
           lower-case-service-id: true #使用小写服务名，默认是大写
       routes:
-        - id: ape-user
+        - id: ape-user-route
           uri: lb://ape-user
           predicates:
-            - Path=/ape-space/**
+            - Path=/ape-user-server/**
         - id: ape-sms
           uri: lb://ape-sms
           predicates:
@@ -57,14 +57,14 @@ spring:
         - id: client
           uri: lb://client
           predicates:
-            - Path=/ape/**
+            - Path=/ape-client/**
 #          filters:
 #            - StripPrefix=1
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: 'http://localhost:9526/ape-space/rsa/publicKey' #配置RSA的公钥访问地址
+          jwk-set-uri: 'http://localhost:9526/ape-user-server/rsa/publicKey' #配置RSA的公钥访问地址
 secure:
   ignore:
     urls: #配置白名单路径

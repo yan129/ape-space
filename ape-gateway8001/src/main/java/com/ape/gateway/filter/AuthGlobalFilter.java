@@ -29,7 +29,8 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String token = exchange.getRequest().getHeaders().getFirst(AuthConstant.JWT_TOKEN_HEADER);
-        if (StringUtils.isBlank(token)){
+        // exchange.getRequest().getURI().getRawPath().contains("/oauth/token") 解决password模式登录时，由于存在Basic头部，防止下面代码去解释jwt报错
+        if (StringUtils.isBlank(token) || exchange.getRequest().getURI().getRawPath().contains("/oauth/token")){
             return chain.filter(exchange);
         }
 
@@ -38,8 +39,8 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             String realToken = token.replace("Bearer ", "");
             JWSObject jwsObject = JWSObject.parse(realToken);
             String userInfo = jwsObject.getPayload().toString();
-            log.info("Authorization.filter() -- user：{}", userInfo);
-            ServerHttpRequest request = exchange.getRequest().mutate().header("user", userInfo).build();
+            log.info("Authorization.filter() -- userInfo：{}", userInfo);
+            ServerHttpRequest request = exchange.getRequest().mutate().header("userInfo", userInfo).build();
             exchange = exchange.mutate().request(request).build();
         } catch (ParseException e) {
             e.printStackTrace();

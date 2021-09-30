@@ -42,11 +42,6 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
         ServerHttpRequest request = authorizationContext.getExchange().getRequest();
         String requestPath = request.getURI().getPath();
 
-        // token为空拒绝访问
-//        if (StringUtils.isBlank(request.getHeaders().getFirst(AuthConstant.JWT_TOKEN_HEADER))){
-//            return Mono.just(new AuthorizationDecision(false));
-//        }
-
         Map<String, List<String>> resourceRoleMap = redisTemplate.opsForHash().entries(AuthConstant.RESOURCE_ROLES_KEY);
         // 请求路径匹配到的资源需要的角色权限集合authorities
         List<String> authorities = CollectionHelper.newArrayList();

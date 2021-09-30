@@ -30,7 +30,7 @@ public interface Secure {
      * @param publicKey
      * @return
      */
-    String encryptData(String data, PublicKey publicKey);
+    String encryptData(String data, Object publicKey);
 
     /**
      * 私钥解密
@@ -38,5 +38,5 @@ public interface Secure {
      * @param privateKey
      * @return
      */
-    String decryptData(String encryptData, PrivateKey privateKey);
+    String decryptData(String encryptData, Object privateKey);
 }
