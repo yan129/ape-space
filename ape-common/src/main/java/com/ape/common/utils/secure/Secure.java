@@ -1,10 +1,5 @@
 package com.ape.common.utils.secure;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-
 /**
  * Created by IntelliJ IDEA.
  *
@@ -17,20 +12,20 @@ public interface Secure {
      * 获取公钥
      * @return
      */
-    PublicKey getPublicKey();
+    <T> T getPublicKey();
 
     /**
      * 获取私钥
      * @return
      */
-    PrivateKey getPrivateKey();
+    <T> T getPrivateKey();
     /**
      * 公钥加密
      * @param data
      * @param publicKey
      * @return
      */
-    String encryptData(String data, Object publicKey);
+    String encryptData(String data, String publicKey);
 
     /**
      * 私钥解密
@@ -38,5 +33,5 @@ public interface Secure {
      * @param privateKey
      * @return
      */
-    String decryptData(String encryptData, Object privateKey);
+    String decryptData(String encryptData, String privateKey);
 }

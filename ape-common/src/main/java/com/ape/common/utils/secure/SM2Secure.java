@@ -9,16 +9,13 @@ import org.bouncycastle.crypto.engines.SM2Engine;
 import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
 import org.bouncycastle.crypto.params.*;
 import org.bouncycastle.crypto.signers.SM2Signer;
-import org.bouncycastle.jce.interfaces.ECPrivateKey;
-import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
+import org.springframework.util.Assert;
 
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.SecureRandom;
 
 /**
@@ -55,34 +52,23 @@ public class SM2Secure implements Secure {
         ecPublicKey = ((ECPublicKeyParameters) asymmetricCipherKeyPair.getPublic());
     }
 
-    @Deprecated
     @Override
-    public PublicKey getPublicKey() {
-        return null;
-    }
-
-    @Deprecated
-    @Override
-    public PrivateKey getPrivateKey() {
-        return null;
-    }
-
-    public ECPublicKeyParameters getEcPublicKey(){
+    public ECPublicKeyParameters getPublicKey() {
         return ecPublicKey;
     }
 
-    public ECPrivateKeyParameters getEcPrivateKey(){
+    @Override
+    public ECPrivateKeyParameters getPrivateKey() {
         return ecPrivateKey;
     }
 
     @Override
-    public String encryptData(String data, Object publicKey) {
+    public String encryptData(String data, String publicKey) {
         try {
-            if (publicKey instanceof String){
-                publicKey = decodePublicKey(((String) publicKey));
-            }
+            Assert.notNull(publicKey, "publicKey is not null.");
+            ECPublicKeyParameters ecPublicKey = decodePublicKey(publicKey);
             SM2Engine sm2Engine = new SM2Engine(SM2Engine.Mode.C1C3C2);
-            sm2Engine.init(true, new ParametersWithRandom(((ECPublicKeyParameters) publicKey), new SecureRandom()));
+            sm2Engine.init(true, new ParametersWithRandom(ecPublicKey, new SecureRandom()));
             byte[] dataBytes = data.getBytes();
             byte[] processBlock = sm2Engine.processBlock(dataBytes, 0, dataBytes.length);
             String marshal = new HexBinaryAdapter().marshal(processBlock);
@@ -96,14 +82,13 @@ public class SM2Secure implements Secure {
     }
 
     @Override
-    public String decryptData(String encryptData, Object privateKey) {
+    public String decryptData(String encryptData, String privateKey) {
         try {
-            if (privateKey instanceof String){
-                privateKey = decodePrivateKey(((String) privateKey));
-            }
+            Assert.notNull(privateKey, "privateKey is not null.");
+            ECPrivateKeyParameters ecPrivateKey = decodePrivateKey(privateKey);
             byte[] cipherText = new HexBinaryAdapter().unmarshal(encryptData);
             SM2Engine sm2Engine = new SM2Engine(SM2Engine.Mode.C1C3C2);
-            sm2Engine.init(false, (ECPrivateKeyParameters) privateKey);
+            sm2Engine.init(false, ecPrivateKey);
             byte[] processBlock = sm2Engine.processBlock(cipherText, 0, cipherText.length);
             String plainText = new String(processBlock);
 

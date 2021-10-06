@@ -1,6 +1,5 @@
 package com.ape.common.utils;
 
-import cn.hutool.core.codec.Base64;
 import com.ape.common.utils.secure.AlgorithmEnum;
 import com.ape.common.utils.secure.ECIESSecure;
 import com.ape.common.utils.secure.SM2Secure;
@@ -12,6 +11,8 @@ import org.springframework.util.Assert;
 import javax.crypto.NoSuchPaddingException;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.security.*;
+import java.util.Base64;
+
 import org.bouncycastle.jce.interfaces.ECPrivateKey;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 
@@ -35,6 +36,7 @@ public class SecureTools {
 //        bb();
 
         aa();
+        bb();
 //        for (int i = 0; i < 100; i++) {
 //            aa();
 //        }
@@ -44,16 +46,17 @@ public class SecureTools {
     private static void aa(){
         long sm2start = System.currentTimeMillis();
         SM2Secure sm2Secure = ((SM2Secure) execute(AlgorithmEnum.SM2));
-        String data = sm2Secure.encryptData("helljhdioqhdoiahdo   jeo", sm2Secure.getEcPublicKey());
-        sm2Secure.decryptData(data, sm2Secure.getEcPrivateKey());
-        sm2Secure.printSM2Info(sm2Secure.getEcPublicKey(), sm2Secure.getEcPrivateKey());
+        String publicKey = new HexBinaryAdapter().marshal(sm2Secure.getPublicKey().getQ().getEncoded(false));
+        String data = sm2Secure.encryptData("helljhdioqhdoiahdo   jeo", publicKey);
+        sm2Secure.decryptData(data, sm2Secure.getPrivateKey().getD().toString(16));
+        sm2Secure.printSM2Info(sm2Secure.getPublicKey(), sm2Secure.getPrivateKey());
         long sm2stop = System.currentTimeMillis();
         System.out.println(sm2stop - sm2start);
 
         try {
-            byte[] signs = sm2Secure.sign("sign", sm2Secure.getEcPrivateKey());
+            byte[] signs = sm2Secure.sign("sign", sm2Secure.getPrivateKey());
             System.out.println("sing = " + new HexBinaryAdapter().marshal(signs));
-            boolean verify = sm2Secure.verify("sign", signs, sm2Secure.getEcPublicKey());
+            boolean verify = sm2Secure.verify("sign", signs, sm2Secure.getPublicKey());
             System.out.println(verify);
         } catch (CryptoException e) {
             e.printStackTrace();
@@ -62,10 +65,11 @@ public class SecureTools {
 
     private static void bb(){
         long start = System.currentTimeMillis();
-        Secure secure = execute(AlgorithmEnum.ECIES);
-        String hello = secure.encryptData("helljhdioqhdoiahdo   jeo", secure.getPublicKey());
-        String decryptData = secure.decryptData(hello, secure.getPrivateKey());
-        ((ECIESSecure) secure).printECCurveInfo(((ECPublicKey) secure.getPublicKey()), ((ECPrivateKey) secure.getPrivateKey()));
+        ECIESSecure secure = ((ECIESSecure) execute(AlgorithmEnum.ECIES));
+        String publicKey = Base64.getEncoder().encodeToString(secure.getPublicKey().getEncoded());
+        String hello = secure.encryptData("helljhdioqhdoiahdo   jeo", publicKey);
+        String decryptData = secure.decryptData(hello, Base64.getEncoder().encodeToString(secure.getPrivateKey().getEncoded()));
+        secure.printECCurveInfo(((ECPublicKey) secure.getPublicKey()), ((ECPrivateKey) secure.getPrivateKey()));
         long stop = System.currentTimeMillis();
         System.out.println(stop - start);
     }

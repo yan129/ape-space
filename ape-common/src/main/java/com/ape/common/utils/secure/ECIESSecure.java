@@ -7,6 +7,7 @@ import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -15,6 +16,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.math.BigInteger;
 import java.security.*;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,7 +54,7 @@ public class ECIESSecure implements Secure {
     }
 
     private void keyGenerator() throws NoSuchProviderException, NoSuchAlgorithmException {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(ECIES, "BC");
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ECDH", "BC");
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
         ecPublicKey = (ECPublicKey) keyPair.getPublic();
         ecPrivateKey = (ECPrivateKey) keyPair.getPrivate();
@@ -63,9 +67,10 @@ public class ECIESSecure implements Secure {
      * @return
      */
     @Override
-    public String encryptData(String data, Object publicKey) {
+    public String encryptData(String data, String publicKey) {
         try {
-            cipher.init(Cipher.ENCRYPT_MODE, ((ECPublicKey) publicKey));
+            ECPublicKey ecPublicKey = decodePublicKey(publicKey);
+            cipher.init(Cipher.ENCRYPT_MODE, ecPublicKey);
             byte[] doFinal = cipher.doFinal(data.getBytes());
             String marshal = new HexBinaryAdapter().marshal(doFinal);
 
@@ -84,9 +89,10 @@ public class ECIESSecure implements Secure {
      * @return
      */
     @Override
-    public String decryptData(String encryptData, Object privateKey) {
+    public String decryptData(String encryptData, String privateKey) {
         try {
-            cipher.init(Cipher.DECRYPT_MODE, ((ECPrivateKey) privateKey));
+            ECPrivateKey ecPrivateKey = decodePrivateKey(privateKey);
+            cipher.init(Cipher.DECRYPT_MODE, ecPrivateKey);
             byte[] cipherText = new HexBinaryAdapter().unmarshal(encryptData);
             byte[] doFinal = cipher.doFinal(cipherText);
 
@@ -129,5 +135,34 @@ public class ECIESSecure implements Secure {
         sb.append("私钥 = ").append(ecPrivateKey.getD().toString(16)).append("\n");
         sb.append("公钥 = ").append(publicKey).append("\n");
         System.out.println(sb.toString());
+    }
+
+    /**
+     * 解析前端字符串公钥
+     * @param publicKey
+     * @return
+     */
+    private ECPublicKey decodePublicKey(String publicKey){
+        Assert.notNull(publicKey, "publicKey is not null.");
+        try {
+            X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(Base64.getDecoder().decode(publicKey));
+            KeyFactory keyFactory = KeyFactory.getInstance("ECDH", "BC");
+            return  ((ECPublicKey) keyFactory.generatePublic(x509EncodedKeySpec));
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private ECPrivateKey decodePrivateKey(String privateKey){
+        Assert.notNull(privateKey, "privateKey is not null.");
+        try {
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKey));
+            KeyFactory keyFactory = KeyFactory.getInstance("ECDH", "BC");
+            return ((ECPrivateKey) keyFactory.generatePrivate(pkcs8EncodedKeySpec));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
