@@ -1,10 +1,12 @@
 package com.ape.user.config;
 
+import com.ape.user.oauth2.TokenGranterExtend;
 import com.ape.user.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -12,6 +14,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.TokenGranter;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
@@ -46,6 +49,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private CustomOauthException oauthException;
     @Autowired
     private DataSource dataSource;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -71,6 +76,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        // 获取grant_type类型组合
+        TokenGranter tokenGranter = TokenGranterExtend.getTokenGranter(authenticationManager, endpoints, stringRedisTemplate);
         DefaultTokenServices tokenServices = setTokenServices(endpoints);
         endpoints.authenticationManager(authenticationManager)
                 // 配置加载用户信息的服务
@@ -79,6 +86,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 //                .accessTokenConverter(jwtAccessTokenConverter())
 //                .tokenEnhancer(tokenEnhancerChain())
                 .tokenServices(tokenServices)
+                // 设置grant_type类型集合
+                .tokenGranter(tokenGranter)
                 .exceptionTranslator(oauthException);
     }
 

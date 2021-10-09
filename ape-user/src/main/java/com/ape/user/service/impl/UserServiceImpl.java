@@ -229,7 +229,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         String text = captchaUtil.getText();
         stringRedisTemplate.opsForValue().set(CaptchaUtil.PREFIX + uuid, text, CaptchaUtil.EXPIRE_TIME, TimeUnit.SECONDS);
         Map<String, Object> map = CollectionHelper.newHashMap();
-        map.put("uuid", CaptchaUtil.PREFIX + uuid);
+        map.put("uuid", uuid);
         map.put("img", captchaUtil.output(image));
         return map;
     }

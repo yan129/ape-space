@@ -2,10 +2,9 @@ package com.ape.user.controller;
 
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.IdUtil;
+import cn.hutool.json.JSONObject;
 import com.ape.common.annotation.ApiIdempotent;
 import com.ape.common.model.ResultVO;
-import com.ape.common.utils.CaptchaUtil;
 import com.ape.user.service.UserService;
 import com.ape.user.vo.LoginVO;
 import com.ape.user.vo.RegisterVO;
@@ -13,13 +12,20 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
@@ -38,14 +44,13 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
 
+    @Value("${oauth.token.url}")
+    private String oauthTokenUrl;
+
     @Autowired
     private UserService userService;
-
-    @GetMapping("/bb")
-//    @PreAuthorize("hasAuthority('ROLE_NORMAL')")
-    public ResultVO<String> aa(){
-        return ResultVO.OK("aabb");
-    }
+    @Autowired
+    private RestTemplate restTemplate;
 
     @ApiOperation(value = "用户注册", notes = "用户注册")
     @PostMapping("/register")
@@ -57,7 +62,6 @@ public class UserController {
     }
 
     @ApiOperation(value = "免密注册", notes = "免密注册")
-
     @PostMapping("/noSecretRegister")
     @ApiIdempotent
     public ResultVO<OAuth2AccessToken> noSecretRegister(@RequestBody @Valid RegisterVO registerVO){
@@ -76,6 +80,26 @@ public class UserController {
 //        response.setContentType("image/jpeg");
         Map<String, Object> captchaImg = userService.getCaptchaImg();
         return ResultVO.OK(captchaImg);
+    }
+
+    @ApiOperation(value = "自定义oauth2登录接口--图形验证码登录", notes = "自定义oauth2登录接口--图形验证码登录")
+    @PostMapping("/oauth2/captchaLogin")
+    public JSONObject loginByCaptcha(HttpServletRequest request, @RequestHeader HttpHeaders httpHeaders){
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.set("grant_type", "captcha");
+        map.set("scope", "all");
+        map.set("username", request.getParameter("username"));
+        map.set("password", request.getParameter("password"));
+        map.set("captchaCode", request.getParameter("captchaCode"));
+        System.out.println(request.getParameter("captchaCode"));
+
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        httpHeaders.setBasicAuth("ape","ape");
+        //构造请求实体和头
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, httpHeaders);
+
+        ResponseEntity<JSONObject> entity = restTemplate.postForEntity(oauthTokenUrl, requestEntity, JSONObject.class);
+        return entity.getBody();
     }
 
 }
