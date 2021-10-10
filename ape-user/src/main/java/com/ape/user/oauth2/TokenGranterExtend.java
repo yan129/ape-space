@@ -32,6 +32,8 @@ public class TokenGranterExtend {
         List<TokenGranter> granterList = new ArrayList<>(Collections.singletonList(endpointsConfigurer.getTokenGranter()));
         // 添加图形验证码
         granterList.add(new CaptchaTokenGranter(authenticationManager, stringRedisTemplate, endpointsConfigurer.getTokenServices(), endpointsConfigurer.getClientDetailsService(), endpointsConfigurer.getOAuth2RequestFactory()));
+        // 添加短信验证码登录
+        granterList.add(new SmsCodeTokenGranter(authenticationManager, endpointsConfigurer.getTokenServices(), endpointsConfigurer.getClientDetailsService(), endpointsConfigurer.getOAuth2RequestFactory()));
         return new CompositeTokenGranter(granterList);
     }
 }

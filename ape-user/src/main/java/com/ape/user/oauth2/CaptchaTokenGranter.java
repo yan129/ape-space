@@ -1,5 +1,6 @@
 package com.ape.user.oauth2;
 
+import com.ape.common.model.ResponseCode;
 import com.ape.common.utils.CaptchaUtil;
 import com.ape.common.utils.CommonUtil;
 import com.ape.common.utils.StringUtils;
@@ -93,10 +94,10 @@ public class CaptchaTokenGranter extends AbstractTokenGranter {
         String uuid = CaptchaUtil.PREFIX + request.getHeader("uuid");
         String cacheCode = stringRedisTemplate.opsForValue().get(uuid);
         if (StringUtils.isBlank(cacheCode)){
-            throw new InvalidGrantException("验证码已过期");
+            throw new InvalidGrantException(ResponseCode.REGISTER_CODE_EXPIRED.getMsg());
         }
         if (!StringUtils.equalsIgnoreCase(code, cacheCode)){
-            throw new InvalidGrantException("验证码错误");
+            throw new InvalidGrantException(ResponseCode.REGISTER_CHECK_CODE.getMsg());
         }else {
             stringRedisTemplate.delete(uuid);
         }

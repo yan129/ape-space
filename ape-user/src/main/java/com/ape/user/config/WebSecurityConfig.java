@@ -1,8 +1,10 @@
 package com.ape.user.config;
 
+import com.ape.user.oauth2.SmsCodeAuthenticationProvider;
 import com.ape.user.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -27,6 +29,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserServiceImpl userService;
+    @Autowired
+    private SmsCodeAuthenticationProvider smsCodeAuthenticationProvider;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -64,9 +70,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        smsCodeAuthenticationProvider.setUserService(userService);
+        smsCodeAuthenticationProvider.setStringRedisTemplate(stringRedisTemplate);
         // 使用这句就不要使用下面这句
         // auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
-        auth.authenticationProvider(authenticationProvider());
+        auth.authenticationProvider(authenticationProvider())
+                // 加入自定义的短信验证配置
+                .authenticationProvider(smsCodeAuthenticationProvider);
     }
 
     @Override

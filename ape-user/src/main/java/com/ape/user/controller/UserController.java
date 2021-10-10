@@ -91,15 +91,31 @@ public class UserController {
         map.set("username", request.getParameter("username"));
         map.set("password", request.getParameter("password"));
         map.set("captchaCode", request.getParameter("captchaCode"));
-        System.out.println(request.getParameter("captchaCode"));
 
+        ResponseEntity<JSONObject> entity = this.getLoginResponseEntity(httpHeaders, map);
+        return entity.getBody();
+    }
+
+    @ApiOperation(value = "自定义oauth2登录接口--短信验证码登录", notes = "自定义oauth2登录接口--短信验证码登录")
+    @PostMapping("/oauth2/smsLogin")
+    public JSONObject loginBySms(HttpServletRequest request, @RequestHeader HttpHeaders httpHeaders){
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.set("grant_type", "sms");
+        map.set("scope", "all");
+        map.set("username", request.getParameter("username"));
+        map.set("smsCode", request.getParameter("smsCode"));
+
+        ResponseEntity<JSONObject> entity = this.getLoginResponseEntity(httpHeaders, map);
+        return entity.getBody();
+    }
+
+    private ResponseEntity<JSONObject> getLoginResponseEntity(@RequestHeader HttpHeaders httpHeaders, MultiValueMap<String, String> map) {
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        httpHeaders.setBasicAuth("ape","ape");
+        httpHeaders.setBasicAuth("ape", "ape");
         //构造请求实体和头
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, httpHeaders);
 
-        ResponseEntity<JSONObject> entity = restTemplate.postForEntity(oauthTokenUrl, requestEntity, JSONObject.class);
-        return entity.getBody();
+        return restTemplate.postForEntity(oauthTokenUrl, requestEntity, JSONObject.class);
     }
 
 }
