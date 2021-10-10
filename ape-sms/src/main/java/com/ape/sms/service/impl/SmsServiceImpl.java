@@ -58,8 +58,6 @@ public class SmsServiceImpl implements SmsService {
 
     private Map<String, Object> buildSendParams(String telephone) {
         String code = String.valueOf(new Random().nextInt(899999) + 100000);
-        // 给验证码设置当前系统时间
-        code = StringUtils.joinWith("_", code, System.currentTimeMillis());
         String[] templateParams = {code, SmsConstant.EXPIRE};
 
         Map<String, Object> params = new HashMap<>(16);
@@ -91,6 +89,8 @@ public class SmsServiceImpl implements SmsService {
             log.info("data:{}", resultMap.get("data"));
             //发送短信code: 发送状态，0为成功。非0为发送失败
             if (statusCode == 0){
+                // 给验证码设置当前系统时间
+                code = StringUtils.joinWith("_", code, System.currentTimeMillis());
                 template.opsForValue().set(SmsConstant.PREFIX + telephone, code, expire, TimeUnit.SECONDS);
                 return true;
             }

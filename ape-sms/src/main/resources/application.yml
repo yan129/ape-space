@@ -1,11 +1,11 @@
 server:
   port: 9525
   servlet:
-    context-path: /ape-space
+    context-path: /ape-sms
 
 spring:
   application:
-    name: ape-sms
+    name: ape-sms-server
   redis:
     host: 47.115.125.76
     port: 6379
@@ -35,5 +35,5 @@ zhenzi:
     apiUri: https://sms_developer.zhenzikj.com
     appId: 104813
     appSecret: 80660e02-6d38-4889-b056-f31cddf45614
-    expire: 12400
+    expire: 124000
     templateId: 3738
