@@ -1,5 +1,6 @@
 package com.ape.user.interceptor;
 
+import com.ape.common.utils.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,6 +21,9 @@ public class CaptchaVerificationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (StringUtils.equals("POST", request.getMethod()) && StringUtils.equals("oauth/token", request.getServletPath())){
+            String verifyCode = request.getParameter("verifyCode").trim();
+        }
         return false;
     }
 
