@@ -25,22 +25,11 @@ import org.bouncycastle.jce.interfaces.ECPublicKey;
  * 加解密工具
  */
 @Slf4j
-public class SecureTools {
+public class SecureUtil {
 
     public static void main(String[] args) {
-
-
-//        bb();
-//        bb();
-//        bb();
-//        bb();
-
         aa();
         bb();
-//        for (int i = 0; i < 100; i++) {
-//            aa();
-//        }
-
     }
 
     private static void aa(){
