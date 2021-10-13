@@ -24,3 +24,5 @@ Homepage URL 用户使用github登陆成功后跳转的页面：http://localhost
 
 第三方登录接口：
 GitHub: http://localhost:9526/oauth2/github/login
+
+https://www.cnblogs.com/HiLzd/p/14367865.html

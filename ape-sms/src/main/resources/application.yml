@@ -1,11 +1,11 @@
 server:
   port: 9525
-  servlet:
-    context-path: /ape-sms
+#  servlet:
+#    context-path: /sms
 
 spring:
   application:
-    name: ape-sms-server
+    name: sms-service
   redis:
     host: 47.115.125.76
     port: 6379
@@ -25,9 +25,15 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://127.0.0.1:7001/eureka,http://127.0.0.1:7002/eureka
+      defaultZone: http://${eureka.instance.hostname}:7001/eureka,http://${eureka.instance.hostname}:7002/eureka
   instance:
     prefer-ip-address: true
+    hostname: 127.0.0.1
+
+# feign配置
+feign:
+  hystrix:
+    enabled: true
 
 # 榛子云短信配置
 zhenzi:
@@ -35,5 +41,5 @@ zhenzi:
     apiUri: https://sms_developer.zhenzikj.com
     appId: 104813
     appSecret: 80660e02-6d38-4889-b056-f31cddf45614
-    expire: 124000
+    expire: 12400000
     templateId: 3738

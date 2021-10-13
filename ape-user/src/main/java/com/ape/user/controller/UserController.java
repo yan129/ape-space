@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import com.ape.common.annotation.ApiIdempotent;
 import com.ape.common.model.ResultVO;
+import com.ape.user.feign.SmsServiceFeign;
 import com.ape.user.service.UserService;
 import com.ape.user.vo.LoginVO;
 import com.ape.user.vo.RegisterVO;
@@ -51,6 +52,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private SmsServiceFeign smsServiceFeign;
 
     @ApiOperation(value = "用户注册", notes = "用户注册")
     @PostMapping("/register")
@@ -80,6 +83,12 @@ public class UserController {
 //        response.setContentType("image/jpeg");
         Map<String, Object> captchaImg = userService.getCaptchaImg();
         return ResultVO.OK(captchaImg);
+    }
+
+    @ApiOperation(value = "获取短信验证码", notes = "获取短信验证码")
+    @PostMapping("/sms/{telephone}")
+    public ResultVO<String> getSmsCode(@PathVariable("telephone") String telephone){
+        return smsServiceFeign.send(telephone);
     }
 
     @ApiOperation(value = "自定义oauth2登录接口--图形验证码登录", notes = "自定义oauth2登录接口--图形验证码登录")

@@ -5,7 +5,7 @@ server:
 
 spring:
   application:
-    name: ape-user-server
+    name: ape-user-service
   # 返回json的全局时间格式
   jackson:
     time-zone: GMT+8

@@ -1,6 +1,8 @@
 package com.ape.sms.service.impl;
 
 import cn.hutool.json.JSONUtil;
+import com.ape.common.exception.ServiceException;
+import com.ape.common.model.ResponseCode;
 import com.ape.common.utils.CommonUtil;
 import com.ape.common.utils.StringUtils;
 import com.ape.sms.constant.SmsConstant;
@@ -28,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class SmsServiceImpl implements SmsService {
 
     @Autowired
-    private StringRedisTemplate template;
+    private StringRedisTemplate stringRedisTemplate;
 
     @Value("${zhenzi.sms.apiUri}")
     private String apiUrl;
@@ -71,6 +73,19 @@ public class SmsServiceImpl implements SmsService {
         String telephone = (String) params.get("number");
         String code = ((String[]) params.get("templateParams"))[0];
 
+        // 使用Redis的 increment 防止并发请求
+        long sendCount = stringRedisTemplate.opsForValue().increment("SMS:INCREMENT:" + telephone, 1);
+        if (sendCount == 1){
+            // key 占坑
+            stringRedisTemplate.expire(SmsConstant.PREFIX + telephone, expire, TimeUnit.SECONDS);
+        }else {
+            throw new ServiceException(ResponseCode.REPEAT_SEND.getMsg());
+        }
+
+        code = StringUtils.joinWith("_", code, System.currentTimeMillis());
+        stringRedisTemplate.opsForValue().set(SmsConstant.PREFIX + telephone, code);
+        stringRedisTemplate.delete("SMS:INCREMENT:" + telephone);
+
         try {
             ZhenziSmsClient client = new ZhenziSmsClient(apiUrl, appId, appSecret);
             Map balanceMap = JSONUtil.toBean(client.balance(), Map.class);
@@ -88,15 +103,13 @@ public class SmsServiceImpl implements SmsService {
             int statusCode = (int) resultMap.get("code");
             log.info("data:{}", resultMap.get("data"));
             //发送短信code: 发送状态，0为成功。非0为发送失败
-            if (statusCode == 0){
-                // 给验证码设置当前系统时间
-                code = StringUtils.joinWith("_", code, System.currentTimeMillis());
-                template.opsForValue().set(SmsConstant.PREFIX + telephone, code, expire, TimeUnit.SECONDS);
-                return true;
+            if (statusCode != 0){
+                log.error("fail：短信服务异常");
+                stringRedisTemplate.delete(SmsConstant.PREFIX + telephone);
+                return false;
             }
 
-            log.error("fail：短信服务异常");
-            return false;
+            return true;
         }catch (Exception e){
             log.error(e.getMessage());
             return false;
