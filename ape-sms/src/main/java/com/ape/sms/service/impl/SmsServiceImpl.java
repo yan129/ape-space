@@ -77,6 +77,7 @@ public class SmsServiceImpl implements SmsService {
         long sendCount = stringRedisTemplate.opsForValue().increment("SMS:INCREMENT:" + telephone, 1);
         if (sendCount == 1){
             // key 占坑
+            stringRedisTemplate.expire("SMS:INCREMENT:" + telephone, 10, TimeUnit.SECONDS);
             stringRedisTemplate.expire(SmsConstant.PREFIX + telephone, expire, TimeUnit.SECONDS);
         }else {
             throw new ServiceException(ResponseCode.REPEAT_SEND.getMsg());
@@ -84,7 +85,6 @@ public class SmsServiceImpl implements SmsService {
 
         code = StringUtils.joinWith("_", code, System.currentTimeMillis());
         stringRedisTemplate.opsForValue().set(SmsConstant.PREFIX + telephone, code);
-        stringRedisTemplate.delete("SMS:INCREMENT:" + telephone);
 
         try {
             ZhenziSmsClient client = new ZhenziSmsClient(apiUrl, appId, appSecret);
