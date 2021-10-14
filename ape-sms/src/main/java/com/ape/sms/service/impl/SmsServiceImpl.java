@@ -83,9 +83,6 @@ public class SmsServiceImpl implements SmsService {
             throw new ServiceException(ResponseCode.REPEAT_SEND.getMsg());
         }
 
-        code = StringUtils.joinWith("_", code, System.currentTimeMillis());
-        stringRedisTemplate.opsForValue().set(SmsConstant.PREFIX + telephone, code);
-
         try {
             ZhenziSmsClient client = new ZhenziSmsClient(apiUrl, appId, appSecret);
             Map balanceMap = JSONUtil.toBean(client.balance(), Map.class);
@@ -103,13 +100,14 @@ public class SmsServiceImpl implements SmsService {
             int statusCode = (int) resultMap.get("code");
             log.info("data:{}", resultMap.get("data"));
             //发送短信code: 发送状态，0为成功。非0为发送失败
-            if (statusCode != 0){
-                log.error("fail：短信服务异常");
-                stringRedisTemplate.delete(SmsConstant.PREFIX + telephone);
-                return false;
+            if (statusCode == 0){
+                code = StringUtils.joinWith("_", code, System.currentTimeMillis());
+                stringRedisTemplate.opsForValue().set(SmsConstant.PREFIX + telephone, code);
+                return true;
             }
-
-            return true;
+            log.error("fail：短信服务异常");
+            stringRedisTemplate.delete(SmsConstant.PREFIX + telephone);
+            return false;
         }catch (Exception e){
             log.error(e.getMessage());
             return false;
