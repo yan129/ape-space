@@ -58,13 +58,14 @@ public class SmsCodeAuthenticationProvider implements AuthenticationProvider, Me
             throw new BadCredentialsException("手机号码不能为空");
         }
         if (!CommonUtil.telephoneRegex(principal)) {
-            throw new UsernameNotFoundException("手机号码格式错误");
+            throw new UsernameNotFoundException("手机号码不合法");
         }
 
         // 这里的Credentials是先通过AbstractTokenGranter组装  new SmsCodeAuthenticationToken() 传入的
         String smsCode = (String) authentication.getCredentials();
         String cacheKey = "SMS:" + principal;
         String cacheCode = stringRedisTemplate.opsForValue().get(cacheKey);
+        cacheCode = StringUtils.split(cacheCode, "_")[0];
 
         // 校验验证码
         if (StringUtils.isBlank(smsCode)) {
