@@ -16,8 +16,12 @@ oauth2:
     authorizeUrl: https://gitee.com/oauth/authorize
     redirectUrl: http://localhost:9526/ape-user/oauth2/gitee/callback
 
+wx:
+  appId: wx1e0d035d53bb6f98
+  appSecret: c1710303f8aa30f4f7ce6d4594627c60
+
 #自定义接口时调用的oauth2/token地址
-oauth:
-  token:
-    url: http://localhost:9526/ape-user/oauth/token
+#oauth:
+#  token:
+#    url: http://localhost:9526/ape-user/oauth/token
 

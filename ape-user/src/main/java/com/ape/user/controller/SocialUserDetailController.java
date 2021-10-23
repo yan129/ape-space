@@ -2,8 +2,10 @@ package com.ape.user.controller;
 
 
 import com.ape.common.model.ResultVO;
+import com.ape.common.utils.CommonUtil;
 import com.ape.user.social.SocialFactory;
 import com.ape.user.social.SocialFactoryProducer;
+import com.ape.user.social.wechat.WeChatService;
 import io.swagger.annotations.ApiOperation;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +14,9 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * <p>
@@ -29,6 +33,20 @@ public class SocialUserDetailController {
 
     @Autowired
     private SocialFactoryProducer socialFactoryProducer;
+    @Autowired
+    private WeChatService weChatService;
+
+    /****************** WeChat 小程序 *************************/
+    @ApiOperation(value = "微信小程序", notes = "微信小程序")
+    @PostMapping("/wxApp/login")
+    @ResponseBody
+    public ResultVO wxMiniLogin(HttpServletRequest request){
+        Map<String, Object> requestParam = CommonUtil.encapsulateRequestArgs(request);
+        weChatService.login(requestParam);
+        Map<String, Object> userInfo = weChatService.getUserInfo(requestParam);
+        OAuth2AccessToken oAuth2AccessToken = weChatService.generateOAuth2AccessToken(userInfo);
+        return ResultVO.OK(oAuth2AccessToken);
+    }
 
     /****************** GitHub *************************/
 

@@ -1,5 +1,7 @@
 package com.ape.user.service.impl;
 
+import com.ape.common.exception.ServiceException;
+import com.ape.common.model.ResponseCode;
 import com.ape.common.utils.StringUtils;
 import com.ape.user.bo.UserBO;
 import com.ape.user.mapper.RoleMapper;
@@ -128,6 +130,6 @@ public class SocialUserDetailServiceImpl extends ServiceImpl<SocialUserDetailMap
                 return this.generateToken(userBO);
             }
         }
-        return null;
+        throw new ServiceException(ResponseCode.USER_LOGIN_FAILURE.getCode(), ResponseCode.USER_LOGIN_FAILURE.getMsg());
     }
 }
