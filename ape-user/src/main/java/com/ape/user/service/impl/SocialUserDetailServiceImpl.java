@@ -3,6 +3,7 @@ package com.ape.user.service.impl;
 import com.ape.common.exception.ServiceException;
 import com.ape.common.model.ResponseCode;
 import com.ape.common.utils.StringUtils;
+import com.ape.user.aop.OauthAuthAop;
 import com.ape.user.bo.UserBO;
 import com.ape.user.mapper.RoleMapper;
 import com.ape.user.mapstruct.UserDOMapper;
@@ -28,6 +29,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -57,6 +59,8 @@ public class SocialUserDetailServiceImpl extends ServiceImpl<SocialUserDetailMap
     private UserService userService;
     @Autowired
     private RoleMapper roleMapper;
+    @Autowired
+    private OauthAuthAop oauthAuthAop;
 
     @Override
     public OAuth2AccessToken generateToken(UserBO userBO) {
@@ -86,7 +90,14 @@ public class SocialUserDetailServiceImpl extends ServiceImpl<SocialUserDetailMap
         // 将OAuth2Request 和 Authorization 两个对象组合起来形成一个 OAuth2Authorization 对象
         OAuth2Authentication oAuth2Authentication = new OAuth2Authentication(oAuth2Request, authenticationToken);
         // OAuth2Authentication对象会传递到AuthorizationServerTokenServices的实现类DefaultTokenServices中，最终会生成一个OAuth2AccessToken
-        return defaultTokenServices.createAccessToken(oAuth2Authentication);
+//        return defaultTokenServices.createAccessToken(oAuth2Authentication);
+        OAuth2AccessToken oAuth2AccessToken = defaultTokenServices.createAccessToken(oAuth2Authentication);
+        try {
+            oauthAuthAop.setRefreshTokenCache(oAuth2AccessToken);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return oAuth2AccessToken;
     }
 
     @Override

@@ -145,7 +145,12 @@ public class WeChatService {
             byte[] resultByte = cipher.doFinal(dataByte);
             if (null != resultByte && resultByte.length > 0) {
                 String result = new String(resultByte, "UTF-8");
-                return JSONUtil.toBean(result, Map.class);
+                Map map = JSONUtil.toBean(result, Map.class);
+                // 微信新版登录解释的encryptedData好像没有openID
+                if (!map.containsKey("openId")){
+                    map.put("openId", requestParam.get("openid"));
+                }
+                return map;
             }
         } catch (Exception e) {
             log.error(e.getMessage());

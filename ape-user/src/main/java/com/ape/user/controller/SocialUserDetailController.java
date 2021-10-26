@@ -37,7 +37,7 @@ public class SocialUserDetailController {
     private WeChatService weChatService;
 
     /****************** WeChat 小程序 *************************/
-    @ApiOperation(value = "微信小程序", notes = "微信小程序")
+    @ApiOperation(value = "微信小程序登录", notes = "微信小程序登录")
     @PostMapping("/wxApp/login")
     @ResponseBody
     public ResultVO wxMiniLogin(HttpServletRequest request){
