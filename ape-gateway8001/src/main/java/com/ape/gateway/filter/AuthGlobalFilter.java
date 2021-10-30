@@ -4,6 +4,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.ape.common.model.ResponseCode;
 import com.ape.common.model.ResultVO;
+import com.ape.common.utils.HttpResponseUtil;
 import com.ape.common.utils.StringUtils;
 import com.ape.gateway.constant.AuthConstant;
 import com.nimbusds.jose.JWSObject;
@@ -58,12 +59,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             // 检查黑名单，用于退出登录
             boolean checkBlacklistExistToken = checkBlacklistExistToken(userInfo);
             if (checkBlacklistExistToken){
-                ServerHttpResponse response = exchange.getResponse();
-                response.setStatusCode(HttpStatus.OK);
-                response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-                String body = JSONUtil.toJsonStr(ResultVO.OK(ResponseCode.UNAUTHORIZED));
-                DataBuffer buffer = response.bufferFactory().wrap(body.getBytes(Charset.forName("UTF-8")));
-                return response.writeWith(Mono.just(buffer));
+                return HttpResponseUtil.MonoOutput(exchange.getResponse(), ResultVO.OK(ResponseCode.UNAUTHORIZED));
             }
 
             log.info("Authorization.filter() -- userInfo：{}", userInfo);
