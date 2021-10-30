@@ -3,17 +3,20 @@ package com.ape.user.controller;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.ape.common.annotation.ApiIdempotent;
 import com.ape.common.model.ResultVO;
 import com.ape.user.feign.SmsServiceFeign;
 import com.ape.user.service.UserService;
 import com.ape.user.vo.LoginVO;
 import com.ape.user.vo.RegisterVO;
+import com.nimbusds.jose.JWSObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -28,8 +31,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -54,6 +59,8 @@ public class UserController {
     private RestTemplate restTemplate;
     @Autowired
     private SmsServiceFeign smsServiceFeign;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @ApiOperation(value = "用户注册", notes = "用户注册")
     @PostMapping("/register")
@@ -125,6 +132,31 @@ public class UserController {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, httpHeaders);
 
         return restTemplate.postForEntity(oauthTokenUrl, requestEntity, JSONObject.class);
+    }
+
+    @ApiOperation(value = "退出登录", notes = "退出登录")
+    @PostMapping("/logout")
+    public ResultVO logout(HttpServletRequest request){
+        String token = request.getHeader("Authorization");
+        token = token.replace("Bearer ", "");
+        JWSObject jwsObject = null;
+        try {
+            jwsObject = JWSObject.parse(token);
+            String tokenInfo = jwsObject.getPayload().toString();
+            JSONObject tokenJson = JSONUtil.parseObj(tokenInfo);
+
+            String jti = tokenJson.getStr("jti");
+            long exp = tokenJson.getLong("exp");
+
+            long systemCurrentTime = System.currentTimeMillis() / 1000;
+            if (exp > systemCurrentTime){
+                stringRedisTemplate.opsForValue().set("logout:token:" + jti, String.valueOf(exp), exp - systemCurrentTime, TimeUnit.SECONDS);
+            }
+            return ResultVO.OK("注销成功");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return ResultVO.ERROR("注销失败");
     }
 
 }

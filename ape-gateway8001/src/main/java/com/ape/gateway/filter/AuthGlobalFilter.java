@@ -1,17 +1,29 @@
 package com.ape.gateway.filter;
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.ape.common.model.ResponseCode;
+import com.ape.common.model.ResultVO;
 import com.ape.common.utils.StringUtils;
 import com.ape.gateway.constant.AuthConstant;
 import com.nimbusds.jose.JWSObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.Charset;
 import java.text.ParseException;
 
 /**
@@ -26,6 +38,9 @@ import java.text.ParseException;
 @Component
 public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String token = exchange.getRequest().getHeaders().getFirst(AuthConstant.JWT_TOKEN_HEADER);
@@ -39,6 +54,18 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             String realToken = token.replace("Bearer ", "");
             JWSObject jwsObject = JWSObject.parse(realToken);
             String userInfo = jwsObject.getPayload().toString();
+
+            // 检查黑名单，用于退出登录
+            boolean checkBlacklistExistToken = checkBlacklistExistToken(userInfo);
+            if (checkBlacklistExistToken){
+                ServerHttpResponse response = exchange.getResponse();
+                response.setStatusCode(HttpStatus.OK);
+                response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+                String body = JSONUtil.toJsonStr(ResultVO.OK(ResponseCode.UNAUTHORIZED));
+                DataBuffer buffer = response.bufferFactory().wrap(body.getBytes(Charset.forName("UTF-8")));
+                return response.writeWith(Mono.just(buffer));
+            }
+
             log.info("Authorization.filter() -- userInfo：{}", userInfo);
             ServerHttpRequest request = exchange.getRequest().mutate().header("userInfo", userInfo).build();
             exchange = exchange.mutate().request(request).build();
@@ -47,6 +74,12 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             log.error("JWT parse error：{}", e.getMessage());
         }
         return chain.filter(exchange);
+    }
+
+    private boolean checkBlacklistExistToken(String payload) {
+        JSONObject tokenJson = JSONUtil.parseObj(payload);
+        String jti = tokenJson.getStr("jti");
+        return stringRedisTemplate.hasKey("logout:token:" + jti);
     }
 
     @Override
