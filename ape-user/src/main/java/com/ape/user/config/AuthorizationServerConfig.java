@@ -113,6 +113,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public JwtAccessTokenConverter jwtAccessTokenConverter(){
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
         converter.setKeyPair(keyPair());
+        converter.setAccessTokenConverter(new CustomAccessTokenConverter());
         return converter;
     }
 
