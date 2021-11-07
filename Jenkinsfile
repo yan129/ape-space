@@ -29,10 +29,10 @@ node{
 
             def imageName = "${currentProjectName}:${tag}"
 
-            echo "====开始${project_name}模块编译构建镜像===="
+            echo "====开始${currentProjectName}模块编译构建镜像===="
             sh "mvn -f ${currentProjectName} clean package dockerfile:build"
             // sh "docker tag ${imageName} ape-space/${imageName}"
-            echo "====结束${project_name}模块编译构建镜像===="
+            echo "====结束${currentProjectName}模块编译构建镜像===="
         }
     }
     stage('启动微服务'){
