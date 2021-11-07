@@ -34,6 +34,7 @@ node{
                 // 删除镜像
                 docker rmi -f ${imageId}
                 echo "成功删除${project_name}镜像"
+            #!/bin/bash -ilex
         '''
 
         def imageName = "${project_name}:${tag}"
