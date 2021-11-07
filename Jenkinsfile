@@ -18,8 +18,9 @@ node{
     stage('编译构建`${project_name}`模块镜像'){
         // 查询容器是否存在，存在则删除
         sh '''
+            #! /bin/sh
             containerId = `docker ps -a | grep -w ${project_name}`
-            if [ -n "${containerId}" ] ; then
+            if [[ -n "${containerId}" ]] ; then
                 // 停掉容器
                 docker stop "${containerId}"
                 // 删除容器
