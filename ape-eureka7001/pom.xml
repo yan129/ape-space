@@ -31,7 +31,8 @@
                 <version>1.4.13</version>
                 <configuration>
                     <repository>${project.artifactId}</repository>
-                    <contextDirectory>Docker/Dockerfile</contextDirectory>
+<!--                    <contextDirectory>${project.basedir}/docker/Dockerfile</contextDirectory>-->
+                    <dockerfile>${project.basedir}/docker/Dockerfile</dockerfile>
                     <buildArgs>
                         <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
                     </buildArgs>
