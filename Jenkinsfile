@@ -14,7 +14,7 @@ node{
     }
     stage('编译构建公共模块'){
         echo "====开始编译构建公共模块===="
-        sh "mvn -f ape-common clean install"
+        sh "mvn -f ape-common clean install package"
         echo "====结束编译构建公共模块===="
     }
     stage('编译构建模块镜像'){
