@@ -16,24 +16,26 @@ node{
         echo "====结束编译构建公共模块===="
     }
     stage('编译构建`${project_name}`模块镜像'){
-        // 查询容器是否存在，存在则删除
-        sh '''
-            #! /bin/sh
-            def containerId = `docker ps -a | grep -w ${project_name}`
-            if [ "${containerId}" != "" ] ; then
-                // 停掉容器
-                docker stop "${containerId}"
-                // 删除容器
-                docker rm "${containerId}"
-                echo "成功删除${project_name}容器"
-            fi
-            // 查询镜像是否存在，存在则删除
-            def imageId = `docker images | grep -w $project_name`
-            if [ "${imageId}" != "" ] ; then
-                // 删除镜像
-                docker rmi -f ${imageId}
-                echo "成功删除${project_name}镜像"
-        '''
+        steps{
+            // 查询容器是否存在，存在则删除
+            sh '''
+                #! /bin/sh
+                containerId = `docker ps -a | grep -w ${project_name}`
+                if [ "${containerId}" != "" ] ; then
+                    // 停掉容器
+                    docker stop "${containerId}"
+                    // 删除容器
+                    docker rm "${containerId}"
+                    echo "成功删除${project_name}容器"
+                fi
+                // 查询镜像是否存在，存在则删除
+                imageId = `docker images | grep -w $project_name`
+                if [ "${imageId}" != "" ] ; then
+                    // 删除镜像
+                    docker rmi -f ${imageId}
+                    echo "成功删除${project_name}镜像"
+            '''
+        }
 
         def imageName = "${project_name}:${tag}"
 
