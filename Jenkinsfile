@@ -16,10 +16,9 @@ node{
         echo "====结束编译构建公共模块===="
     }
     stage('编译构建`${project_name}`模块镜像'){
-        steps{
+        steps {
             // 查询容器是否存在，存在则删除
             sh '''
-                #! /bin/sh
                 containerId = `docker ps -a | grep -w ${project_name}`
                 if [ "${containerId}" != "" ] ; then
                     // 停掉容器
@@ -35,14 +34,14 @@ node{
                     docker rmi -f ${imageId}
                     echo "成功删除${project_name}镜像"
             '''
+
+            def imageName = "${project_name}:${tag}"
+
+            echo "====开始${project_name}模块编译构建镜像===="
+            sh "mvn -f ${project_name} clean package dockerfile:build"
+            // sh "docker tag ${imageName} ape-space/${imageName}"
+            echo "====结束${project_name}模块编译构建镜像===="
         }
-
-        def imageName = "${project_name}:${tag}"
-
-        echo "====开始${project_name}模块编译构建镜像===="
-        sh "mvn -f ${project_name} clean package dockerfile:build"
-        // sh "docker tag ${imageName} ape-space/${imageName}"
-        echo "====结束${project_name}模块编译构建镜像===="
     }
     stage('启动`${project_name}`服务'){
         def imageName = "${project_name}:${tag}"
