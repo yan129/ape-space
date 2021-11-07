@@ -19,8 +19,9 @@ node{
         // 查询容器是否存在，存在则删除
         sh '''
             #! /bin/sh
-            containerId = `docker ps -a | grep -w ${project_name}`
-            if [[ -n "${containerId}" ]] ; then
+            container_id = `docker ps -a | grep -w ${project_name}`
+            echo "${containerId}======"
+            if ["${container_id}" != "" ] ; then
                 // 停掉容器
                 docker stop "${containerId}"
                 // 删除容器
