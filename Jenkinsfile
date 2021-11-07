@@ -18,8 +18,8 @@ node{
     stage('编译构建`${project_name}`模块镜像'){
         // 查询容器是否存在，存在则删除
         sh '''
-            def containerId = `docker ps -a | grep -w ${project_name}`
-            if [ "$containerId" != "" ] ; then
+            containerId = `docker ps -a | grep -w ${project_name}`
+            if [ "${containerId}" != "" ] ; then
                 // 停掉容器
                 docker stop $containerId
                 // 删除容器
@@ -27,8 +27,8 @@ node{
                 echo "成功删除${project_name}容器"
             fi
             // 查询镜像是否存在，存在则删除
-            def imageId = `docker images | grep -w $project_name`
-            if [ "$imageId" != "" ] ; then
+            imageId = `docker images | grep -w $project_name`
+            if [ "${imageId}" != "" ] ; then
                 // 删除镜像
                 docker rmi -f $imageId
                 echo "成功删除${project_name}镜像"
