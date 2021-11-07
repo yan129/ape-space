@@ -25,6 +25,6 @@ node{
     }
     stage('启动${project_name}服务'){
         def imageName = "${project_name}:${tag}"
-        sh "docker run --restart=always -d --name ${imageName} -p 7001:7001 ${project_name}"
+        sh "docker run --restart=always -d --name ${project_name} -p 7001:7001 ${imageName}"
     }
 }
