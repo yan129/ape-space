@@ -10,12 +10,12 @@ node{
 	    userRemoteConfigs: [[credentialsId: "534edba8f682ec4968c5d4840aa0eaff", url: 'git@gitee.com:yan129/ape-space.git']]])
     }
     stage('编译构建公共模块'){
-        sh ''mvn -f ape-common clean install''
+        sh "mvn -f ape-common clean install"
     }
     stage('编译构建${project_name}模块镜像'){
         def imageName = "${project_name}:${tag}"
 
-        sh ''mvn -f ${project_name} clean package dockerfile:build''
-        sh ''docker tag ${imageName} ape-space/${imageName}''
+        sh "mvn -f ${project_name} clean package dockerfile:build"
+        sh "docker tag ${imageName} ape-space/${imageName}"
     }
 }
