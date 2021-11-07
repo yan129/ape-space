@@ -18,7 +18,7 @@ node{
         def imageName = "${project_name}:${tag}"
 
         echo "====开始${project_name}模块编译构建镜像===="
-        sh "mvn -f ${project_name} clean package dockerfile:build -f ${project_name}/Docker/Dockerfile"
+        sh "mvn -f ${project_name} clean package dockerfile:build"
         sh "docker tag ${imageName} ape-space/${imageName}"
         echo "====结束${project_name}模块编译构建镜像===="
     }

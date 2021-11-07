@@ -31,6 +31,7 @@
                 <version>1.4.13</version>
                 <configuration>
                     <repository>${project.artifactId}</repository>
+                    <contextDirectory>Docker/Dockerfile</contextDirectory>
                     <buildArgs>
                         <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
                     </buildArgs>
