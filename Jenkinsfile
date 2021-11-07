@@ -19,7 +19,7 @@ node{
     }
     stage('编译构建`${project_name}`模块镜像'){
         // 查询容器是否存在，存在则删除
-        sh "/root/softwork/ape-space/deploy.sh ${project_name}"
+        sh "/root/softwork/ape-space/deploy.sh ${project_name} ${tag}"
 
         def imageName = "${project_name}:${tag}"
 
