@@ -19,9 +19,8 @@ node{
         // 查询容器是否存在，存在则删除
         sh '''
             #! /bin/sh
-            container_id = `docker ps -a | grep -w ${project_name}`
-            echo "${containerId}======"
-            if ["${container_id}" != "" ] ; then
+            def containerId = `docker ps -a | grep -w ${project_name}`
+            if [ "${containerId}" != "" ] ; then
                 // 停掉容器
                 docker stop "${containerId}"
                 // 删除容器
@@ -29,7 +28,7 @@ node{
                 echo "成功删除${project_name}容器"
             fi
             // 查询镜像是否存在，存在则删除
-            imageId = `docker images | grep -w $project_name`
+            def imageId = `docker images | grep -w $project_name`
             if [ "${imageId}" != "" ] ; then
                 // 删除镜像
                 docker rmi -f ${imageId}
