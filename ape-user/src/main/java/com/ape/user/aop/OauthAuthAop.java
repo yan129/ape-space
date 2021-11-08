@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -47,19 +48,7 @@ public class OauthAuthAop {
             ResponseEntity<OAuth2AccessToken> responseEntity = (ResponseEntity<OAuth2AccessToken>)proceed;
             OAuth2AccessToken body = responseEntity.getBody();
 
-            String refreshToken = body.getRefreshToken().getValue();
-            // 解析 refreshToken
-            JWSObject jwsObject = JWSObject.parse(refreshToken);
-            String refreshTokenInfo = jwsObject.getPayload().toString();
-            Map refreshTokenMap = JSONUtil.toBean(refreshTokenInfo, Map.class);
-            System.out.println(refreshToken);
-            long exp = Long.parseLong(String.valueOf(refreshTokenMap.get("exp"))) - System.currentTimeMillis() / 1000;
-            String userName = (String) refreshTokenMap.get("user_name");
-
-            // 将 RefreshToken 存入 Redis
-            stringRedisTemplate.opsForValue().set(userName, refreshToken, exp, TimeUnit.SECONDS);
-            // 设置 RefreshToken 为空，不返回
-            ((DefaultOAuth2AccessToken) body).setRefreshToken(null);
+            this.setRefreshTokenCache(body);
 
             if (responseEntity.getStatusCode().is2xxSuccessful()){
                 resultVO = ResultVO.OK(body);
@@ -69,5 +58,20 @@ public class OauthAuthAop {
             }
         }
         return ResponseEntity.status(HttpStatus.OK.value()).body(resultVO);
+    }
+
+    public void setRefreshTokenCache(OAuth2AccessToken auth2AccessToken) throws ParseException {
+        String refreshToken = auth2AccessToken.getRefreshToken().getValue();
+        // 解析 refreshToken
+        JWSObject jwsObject = JWSObject.parse(refreshToken);
+        String refreshTokenInfo = jwsObject.getPayload().toString();
+        Map refreshTokenMap = JSONUtil.toBean(refreshTokenInfo, Map.class);
+        long exp = Long.parseLong(String.valueOf(refreshTokenMap.get("exp"))) - System.currentTimeMillis() / 1000;
+        String ati = (String) refreshTokenMap.get("ati");
+
+        // 将 RefreshToken 存入 Redis
+        stringRedisTemplate.opsForValue().set("refreshToken:" + ati, refreshToken, exp, TimeUnit.SECONDS);
+        // 设置 RefreshToken 为空，不返回
+        ((DefaultOAuth2AccessToken) auth2AccessToken).setRefreshToken(null);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -88,7 +89,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .tokenServices(tokenServices)
                 // 设置grant_type类型集合
                 .tokenGranter(tokenGranter)
-                .exceptionTranslator(oauthException);
+                .exceptionTranslator(oauthException)
+                // 配置/oauth/token为post请求
+                .allowedTokenEndpointRequestMethods(HttpMethod.POST)
+                // 配置请求/oauth/token地址时映射到自定义的/user/oauth/token
+                .pathMapping("/oauth/token", "/user/oauth/token");
     }
 
     private DefaultTokenServices setTokenServices(AuthorizationServerEndpointsConfigurer endpoints) {

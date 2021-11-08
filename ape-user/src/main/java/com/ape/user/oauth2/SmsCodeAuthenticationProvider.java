@@ -65,15 +65,17 @@ public class SmsCodeAuthenticationProvider implements AuthenticationProvider, Me
         String smsCode = (String) authentication.getCredentials();
         String cacheKey = "SMS:" + principal;
         String cacheCode = stringRedisTemplate.opsForValue().get(cacheKey);
-        cacheCode = StringUtils.split(cacheCode, "_")[0];
 
         // 校验验证码
         if (StringUtils.isBlank(smsCode)) {
             throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider sms code is null", "验证码不能为空"));
         }else if (StringUtils.isBlank(cacheCode)){
             throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider sms cache code is null", ResponseCode.REGISTER_CODE_EXPIRED.getMsg()));
-        }else if (!StringUtils.equalsIgnoreCase(smsCode, cacheCode)){
-            throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider sms code check error", ResponseCode.REGISTER_CHECK_CODE.getMsg()));
+        }else {
+            cacheCode = StringUtils.split(cacheCode, "_")[0];
+            if (!StringUtils.equalsIgnoreCase(smsCode, cacheCode)){
+                throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider sms code check error", ResponseCode.REGISTER_CHECK_CODE.getMsg()));
+            }
         }
 
         UserDetails user;

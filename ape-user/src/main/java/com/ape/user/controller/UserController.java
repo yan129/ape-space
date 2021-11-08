@@ -6,6 +6,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.ape.common.annotation.ApiIdempotent;
 import com.ape.common.model.ResultVO;
+import com.ape.common.utils.StringUtils;
 import com.ape.user.feign.SmsServiceFeign;
 import com.ape.user.service.UserService;
 import com.ape.user.vo.LoginVO;
@@ -15,24 +16,21 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.security.Principal;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -50,17 +48,14 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/user")
 public class UserController {
 
-    @Value("${oauth.token.url}")
-    private String oauthTokenUrl;
-
     @Autowired
     private UserService userService;
-    @Autowired
-    private RestTemplate restTemplate;
     @Autowired
     private SmsServiceFeign smsServiceFeign;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private TokenEndpoint tokenEndpoint;
 
     @ApiOperation(value = "用户注册", notes = "用户注册")
     @PostMapping("/register")
@@ -98,40 +93,42 @@ public class UserController {
         return smsServiceFeign.send(telephone);
     }
 
-    @ApiOperation(value = "自定义oauth2登录接口--图形验证码登录", notes = "自定义oauth2登录接口--图形验证码登录")
-    @PostMapping("/oauth2/captchaLogin")
-    public JSONObject loginByCaptcha(HttpServletRequest request, @RequestHeader HttpHeaders httpHeaders){
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.set("grant_type", "captcha");
-        map.set("scope", "all");
-        map.set("username", request.getParameter("username"));
-        map.set("password", request.getParameter("password"));
-        map.set("captchaCode", request.getParameter("captchaCode"));
+    @ApiOperation(value = "自定义oauth2登录接口", notes = "自定义oauth2登录接口")
+    @PostMapping("/oauth/token")
+    public ResponseEntity<OAuth2AccessToken> customOauthLogin(Principal principal, HttpServletRequest request) throws HttpRequestMethodNotSupportedException {
+        String loginType = request.getParameter("loginType");
+        Map<String, String> parameters;
 
-        ResponseEntity<JSONObject> entity = this.getLoginResponseEntity(httpHeaders, map);
-        return entity.getBody();
+        if (StringUtils.equals("sms", loginType)){
+            parameters = this.buildSmsLoginMap(request);
+        }else {
+            parameters = this.buildCaptchaLoginMap(request);
+        }
+
+        return tokenEndpoint.postAccessToken(principal, parameters);
     }
 
-    @ApiOperation(value = "自定义oauth2登录接口--短信验证码登录", notes = "自定义oauth2登录接口--短信验证码登录")
-    @PostMapping("/oauth2/smsLogin")
-    public JSONObject loginBySms(HttpServletRequest request, @RequestHeader HttpHeaders httpHeaders){
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.set("grant_type", "sms");
-        map.set("scope", "all");
-        map.set("username", request.getParameter("username"));
-        map.set("smsCode", request.getParameter("smsCode"));
-
-        ResponseEntity<JSONObject> entity = this.getLoginResponseEntity(httpHeaders, map);
-        return entity.getBody();
+    private Map<String, String> buildCaptchaLoginMap(HttpServletRequest request){
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("grant_type", "captcha");
+        parameters.put("client_id", "ape");
+        parameters.put("client_secret", "ape");
+        parameters.put("scope", "all");
+        parameters.put("username", request.getParameter("username"));
+        parameters.put("password", request.getParameter("password"));
+        parameters.put("captchaCode", request.getParameter("captchaCode"));
+        return parameters;
     }
 
-    private ResponseEntity<JSONObject> getLoginResponseEntity(@RequestHeader HttpHeaders httpHeaders, MultiValueMap<String, String> map) {
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        httpHeaders.setBasicAuth("ape", "ape");
-        //构造请求实体和头
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, httpHeaders);
-
-        return restTemplate.postForEntity(oauthTokenUrl, requestEntity, JSONObject.class);
+    private Map<String, String> buildSmsLoginMap(HttpServletRequest request){
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("grant_type", "sms");
+        parameters.put("client_id", "ape");
+        parameters.put("client_secret", "ape");
+        parameters.put("scope", "all");
+        parameters.put("username", request.getParameter("username"));
+        parameters.put("smsCode", request.getParameter("smsCode"));
+        return parameters;
     }
 
     @ApiOperation(value = "退出登录", notes = "退出登录")

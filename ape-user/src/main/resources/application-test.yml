@@ -1,11 +1,11 @@
 server:
   port: 9526
   servlet:
-    context-path: /ape-space
+    context-path: /ape-user
 
 spring:
   application:
-    name: ape-user
+    name: ape-user-service
   # 返回json的全局时间格式
   jackson:
     time-zone: GMT+8
