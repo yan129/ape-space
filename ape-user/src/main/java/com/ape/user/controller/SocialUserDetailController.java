@@ -6,6 +6,7 @@ import com.ape.common.utils.CommonUtil;
 import com.ape.user.social.SocialFactory;
 import com.ape.user.social.SocialFactoryProducer;
 import com.ape.user.social.wechat.WeChatService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import java.util.Map;
  * @author Yan
  * @since 2021-08-06
  */
+@Api(value = "社交登录控制器", description = "社交登录控制器")
 @Slf4j
 @Controller
 @RequestMapping("/oauth2")
