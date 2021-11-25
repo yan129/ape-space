@@ -14,6 +14,7 @@
         <module>ape-user</module>
         <module>ape-oauth2-client1</module>
         <module>ape-canal</module>
+        <module>ape-oss</module>
     </modules>
 
     <parent>
