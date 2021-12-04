@@ -5,7 +5,6 @@ import cn.hutool.core.util.IdUtil;
 import com.ape.common.exception.ServiceException;
 import com.ape.common.model.ResponseCode;
 import com.ape.common.utils.CaptchaUtil;
-import com.ape.common.utils.CommonUtil;
 import com.ape.common.utils.StringUtils;
 import com.ape.user.bo.UserBO;
 import com.ape.user.mapper.RoleMapper;
@@ -232,5 +231,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         map.put("uuid", uuid);
         map.put("img", captchaUtil.output(image));
         return map;
+    }
+
+    @Override
+    public boolean modifyAvatar(String uid, String avatarUrl) {
+        UserDO userDO = new UserDO();
+        userDO.setId(uid);
+        userDO.setAvatar(avatarUrl);
+        return this.updateById(userDO);
     }
 }

@@ -51,4 +51,12 @@ public interface UserService extends IService<UserDO> {
      * @return
      */
     Map<String, Object> getCaptchaImg() throws IOException;
+
+    /**
+     * 修改用户头像
+     * @param uid 用户ID
+     * @param avatarUrl 头像地址
+     * @return
+     */
+    boolean modifyAvatar(String uid, String avatarUrl);
 }

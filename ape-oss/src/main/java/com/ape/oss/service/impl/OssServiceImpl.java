@@ -34,6 +34,7 @@ import java.util.*;
 public class OssServiceImpl implements OssService {
 
     private static final String[] IMAGE_TYPE = {".jpg", ".jpeg", ".gif", ".png"};
+    private static final String SEPARATOR = "/";
     private static final String DOT = ".";
     private static final String DATE_PATTERN = "yyyy/MM/dd";
 
@@ -66,9 +67,9 @@ public class OssServiceImpl implements OssService {
 
             String newFilename;
             if (StringUtils.isNotBlank(datePath)){
-                newFilename = folder + File.separator + datePath + File.separator + oldFilename;
+                newFilename = folder + SEPARATOR + datePath + SEPARATOR + oldFilename;
             }else {
-                newFilename = folder + File.separator + oldFilename;
+                newFilename = folder + SEPARATOR + oldFilename;
             }
 
             ossClient.putObject(OssConstant.BUCKET_NAME, newFilename, is);
@@ -120,7 +121,7 @@ public class OssServiceImpl implements OssService {
         boolean isImg = this.imgSuffixCheck(filename);
         String url = newFilename;
         if (isImg || StringUtils.endsWithIgnoreCase(filename, ".pdf")){
-            url = "https://" + OssConstant.BUCKET_NAME + DOT + OssConstant.END_POINT + File.separator + newFilename;
+            url = "https://" + OssConstant.BUCKET_NAME + DOT + OssConstant.END_POINT + SEPARATOR + newFilename;
         }
         return url;
     }
@@ -140,7 +141,7 @@ public class OssServiceImpl implements OssService {
         String datePath = this.generateDatePath(datePathStorageSwitch);
 
         String oldFilename = file.getOriginalFilename();
-        String newFilename = folder + File.separator + datePath + File.separator + IdUtil.simpleUUID() + DOT + StringUtils.substringAfterLast(oldFilename, DOT);
+        String newFilename = folder + SEPARATOR + datePath + SEPARATOR + IdUtil.simpleUUID() + DOT + StringUtils.substringAfterLast(oldFilename, DOT);
 
         CommonsMultipartFile cmf = (CommonsMultipartFile) file;
         DiskFileItem diskFileItem = (DiskFileItem) cmf.getFileItem();

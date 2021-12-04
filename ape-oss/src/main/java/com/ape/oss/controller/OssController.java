@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -29,9 +28,9 @@ public class OssController {
 
     @ApiOperation(value = "文件上传", notes = "文件上传")
     @PostMapping("/upload")
-    public ResultVO<Object> upload(MultipartFile file, String folder, Boolean imgSuffixCheckSwitch, Boolean datePathStorageSwitch){
+    public ResultVO<String> upload(MultipartFile file, String folder, Boolean imgSuffixCheckSwitch, Boolean datePathStorageSwitch){
         Map<String, Object> map = ossService.uploadFile(file, folder, imgSuffixCheckSwitch, datePathStorageSwitch);
-        return ResultVO.OK(map);
+        return ((boolean) map.get("status")) ? ResultVO.OK(((String) map.get("message"))) : ResultVO.ERROR(((String) map.get("message")));
     }
 
     @ApiOperation(value = "文件断点续传", notes = "文件断点续传")
