@@ -54,9 +54,13 @@ spring:
           predicates:
             - Path=/ape-user/**
         - id: sms-router
-          uri: lb:/sms-service
+          uri: lb://sms-service
           predicates:
             - Path=/sms/**
+        - id: oss-router
+          uri: lb://oss-service
+          predicates:
+            - Path=/oss/**
         - id: client
           uri: lb://client
           predicates:

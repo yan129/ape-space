@@ -47,7 +47,7 @@ public class SocialUserDetailController {
         weChatService.login(requestParam);
         Map<String, Object> userInfo = weChatService.getUserInfo(requestParam);
         OAuth2AccessToken oAuth2AccessToken = weChatService.generateOAuth2AccessToken(userInfo);
-        return ResultVO.OK(oAuth2AccessToken);
+        return ResultVO.OK(oAuth2AccessToken).setEncrypt(true);
     }
 
     /****************** GitHub *************************/

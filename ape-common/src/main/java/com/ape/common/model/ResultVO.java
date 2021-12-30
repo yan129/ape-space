@@ -37,6 +37,7 @@ public class ResultVO<T> implements Serializable {
         this.code = code;
         this.message = message;
         this.data = data;
+        this.encrypt = false;
     }
 
     public static <T> ResultVO<T> OK(){
