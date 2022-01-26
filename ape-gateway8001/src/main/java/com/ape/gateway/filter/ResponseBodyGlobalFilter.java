@@ -1,14 +1,12 @@
 package com.ape.gateway.filter;
 
 import cn.hutool.core.codec.Base64;
+import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.antherd.smcrypto.sm2.Sm2;
-import com.ape.common.utils.SecureUtil;
-import com.ape.common.utils.secure.AlgorithmEnum;
-import com.ape.common.utils.secure.SM2Secure;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -27,7 +25,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
 /**
  * Created by IntelliJ IDEA.
@@ -74,7 +71,7 @@ public class ResponseBodyGlobalFilter implements GlobalFilter, Ordered {
                         Boolean isEncrypt = jsonObject.get("encrypt", Boolean.class);
                         if (success && isEncrypt){
                             // 随机生成AES密钥
-                            byte[] aesKey = cn.hutool.crypto.SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue()).getEncoded();
+                            byte[] aesKey = SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue()).getEncoded();
                             // 构建AES
                             SymmetricCrypto aes = new SymmetricCrypto(SymmetricAlgorithm.AES, aesKey);
                             // aes加密数据

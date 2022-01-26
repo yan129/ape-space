@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
  */
 
 @Component
-    @FeignClient(value = "SMS-SERVICE")
+@FeignClient(value = "SMS-SERVICE")
 public interface SmsServiceFeign {
 
     /**

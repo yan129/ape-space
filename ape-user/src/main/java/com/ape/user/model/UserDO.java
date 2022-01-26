@@ -71,5 +71,7 @@ public class UserDO extends BaseEntity {
     @ApiModelProperty(value = "上一次登录时间")
     private Date lastLoginTime;
 
+    @ApiModelProperty(value = "主题颜色")
+    private String themeColor;
 
 }

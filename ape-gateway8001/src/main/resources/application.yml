@@ -49,6 +49,10 @@ spring:
           lower-case-service-id: true #使用小写服务名，默认是大写
       routes:
         # 注意：lb://ape-user-server的服务名称不能和Path=/ape-user/**的请求路径前缀一致，不然报404
+        - id: ape-article-router
+          uri: lb://ape-article-service
+          predicates:
+            - Path=/ape-article/**
         - id: ape-user-router
           uri: lb://ape-user-service
           predicates:

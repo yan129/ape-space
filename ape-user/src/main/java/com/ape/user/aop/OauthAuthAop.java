@@ -54,7 +54,7 @@ public class OauthAuthAop {
                 resultVO = ResultVO.OK(body);
             }else {
                 log.error("Oauth2 Authorization Fail: {}", responseEntity.getStatusCode().toString());
-                resultVO = ResultVO.ERROR("认证失败");
+                resultVO = ResultVO.ERROR().setMessage("认证失败");
             }
         }
         return ResponseEntity.status(HttpStatus.OK.value()).body(resultVO);

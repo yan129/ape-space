@@ -72,8 +72,8 @@ public class RestAuthenticationEntryPoint implements ServerAuthenticationEntryPo
             long exp = Long.parseLong(String.valueOf(userInfoMap.get("exp"))) - System.currentTimeMillis() / 1000;
             // token过期，刷新token
             if (exp <= 0){
-                String userName = (String) userInfoMap.get("user_name");
-                String cacheRefreshToken = stringRedisTemplate.opsForValue().get(userName);
+                String jti = (String) userInfoMap.get("jti");
+                String cacheRefreshToken = stringRedisTemplate.opsForValue().get("refreshToken:" + jti);
 
                 // 缓存在Redis中的refreshToken过期，提醒用户重新登录，否则调用刷新token接口
                 if (StringUtils.isBlank(cacheRefreshToken)){

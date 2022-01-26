@@ -20,6 +20,7 @@
         <result column="account_not_locked" property="accountNotLocked" />
         <result column="credentials_not_expired" property="credentialsNotExpired" />
         <result column="last_login_time" property="lastLoginTime" />
+        <result column="theme_color" property="themeColor" />
     </resultMap>
 
 </mapper>

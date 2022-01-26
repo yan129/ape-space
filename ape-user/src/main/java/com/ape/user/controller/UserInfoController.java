@@ -2,6 +2,7 @@ package com.ape.user.controller;
 
 import com.ape.common.model.ResultVO;
 import com.ape.user.feign.OssServiceFeign;
+import com.ape.user.model.UserDO;
 import com.ape.user.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,4 +40,35 @@ public class UserInfoController {
         boolean update = userService.modifyAvatar(uid, uploadInfo.getData());
         return update ? ResultVO.OK(uploadInfo.getData()) : ResultVO.ERROR().setMessage("更换失败");
     }
+
+    @ApiOperation(value = "修改昵称", notes = "修改昵称")
+    @PostMapping("/modifyNickname/{uid}")
+    public ResultVO modifyNickname(@PathVariable("uid") String uid, @RequestParam("nickname") String nickname){
+        UserDO userDO = new UserDO();
+        userDO.setId(uid);
+        userDO.setNickname(nickname);
+        boolean result = userService.updateById(userDO);
+        return result ? ResultVO.OK() : ResultVO.ERROR();
+    }
+
+    @ApiOperation(value = "修改个性签名", notes = "修改个性签名")
+    @PostMapping("/modifyRemark/{uid}")
+    public ResultVO modifyRemark(@PathVariable("uid") String uid, @RequestParam("remark") String remark){
+        UserDO userDO = new UserDO();
+        userDO.setId(uid);
+        userDO.setNickname(remark);
+        boolean result = userService.updateById(userDO);
+        return result ? ResultVO.OK() : ResultVO.ERROR();
+    }
+
+    @ApiOperation(value = "修改主题颜色", notes = "修改主题颜色")
+    @PostMapping("/modifyThemeColor/{uid}")
+    public ResultVO modifyThemeColor(@PathVariable("uid") String uid, @RequestParam("themeColor") String themeColor){
+        UserDO userDO = new UserDO();
+        userDO.setId(uid);
+        userDO.setThemeColor(themeColor);
+        boolean result = userService.updateById(userDO);
+        return result ? ResultVO.OK() : ResultVO.ERROR();
+    }
+
 }

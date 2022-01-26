@@ -43,6 +43,7 @@ public class CustomAccessTokenConverter extends DefaultAccessTokenConverter {
             userInfo.put("profile", userBO.getProfile());
             userInfo.put("gender", userBO.getGender());
             userInfo.put("lastLoginTime", userBO.getLastLoginTime());
+            userInfo.put("themeColor", userBO.getThemeColor());
             userInfo.put("roles", this.getRoleToList(userBO));
 
             Map<String, Object> response = new LinkedHashMap<>();
