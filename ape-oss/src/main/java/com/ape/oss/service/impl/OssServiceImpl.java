@@ -6,6 +6,7 @@ import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.internal.OSSHeaders;
 import com.aliyun.oss.model.*;
+import com.ape.common.exception.ServiceException;
 import com.ape.common.utils.StringUtils;
 import com.ape.oss.constant.OssConstant;
 import com.ape.oss.service.OssService;
@@ -238,15 +239,33 @@ public class OssServiceImpl implements OssService {
     }
 
     @Override
-    public void deleteFile(String filePath) {
+    public Boolean deleteFile(String filePath) {
         if (StringUtils.isBlank(filePath)){
-            return;
+            return false;
         }
 
         OSS ossClient = new OSSClientBuilder().build(OssConstant.END_POINT, OssConstant.ACCESSKEY_ID, OssConstant.ACCESSKEY_SECRET);
 
+        filePath = this.substringThirdIndexSlash(filePath);
+
+        if (!ossClient.doesObjectExist(OssConstant.BUCKET_NAME, filePath)) {
+            throw new ServiceException("文件不存在");
+        }
+
         ossClient.deleteObject(OssConstant.BUCKET_NAME, filePath);
 
-        ossClient.shutdown();
+        if (ossClient != null) {
+            ossClient.shutdown();
+        }
+        return true;
+    }
+
+    private String substringThirdIndexSlash(String url) {
+        int thirdIndex = 0;
+        for (int i = 0; i < 3; i++) {
+            thirdIndex = url.indexOf("/", thirdIndex);
+            thirdIndex++;
+        }
+        return StringUtils.substring(url, thirdIndex);
     }
 }

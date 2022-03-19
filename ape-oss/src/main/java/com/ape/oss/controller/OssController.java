@@ -43,7 +43,7 @@ public class OssController {
     @ApiOperation(value = "删除文件", notes = "删除文件")
     @DeleteMapping("/delete")
     public ResultVO delete(String url){
-        ossService.deleteFile(url);
-        return ResultVO.OK();
+        Boolean isDelete = ossService.deleteFile(url);
+        return isDelete ? ResultVO.OK() : ResultVO.ERROR();
     }
 }

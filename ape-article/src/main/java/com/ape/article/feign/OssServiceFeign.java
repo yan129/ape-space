@@ -1,4 +1,4 @@
-package com.ape.user.feign;
+package com.ape.article.feign;
 
 import com.ape.common.model.ResultVO;
 import org.springframework.cloud.openfeign.FeignClient;

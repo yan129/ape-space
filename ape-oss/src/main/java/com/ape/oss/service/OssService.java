@@ -38,5 +38,5 @@ public interface OssService {
      * 删除文件
      * @param filePath 删除文件的路径
      */
-    void deleteFile(String filePath);
+    Boolean deleteFile(String filePath);
 }

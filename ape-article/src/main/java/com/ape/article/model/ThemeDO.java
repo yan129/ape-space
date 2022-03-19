@@ -40,6 +40,9 @@ public class ThemeDO extends BaseEntity {
     @Length(max = 16, message = "专题名称不能超过16个字符")
     private String name;
 
+    @ApiModelProperty(value = "专题描述")
+    private String description;
+
     @ApiModelProperty(value = "专题封面图")
     private String picture;
 

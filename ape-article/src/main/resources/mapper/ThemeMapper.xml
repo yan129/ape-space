@@ -10,6 +10,7 @@
         <result column="gmt_modified" property="gmtModified" />
         <result column="uid" property="uid" />
         <result column="name" property="name" />
+        <result column="description" property="description" />
         <result column="picture" property="picture" />
     </resultMap>
 
