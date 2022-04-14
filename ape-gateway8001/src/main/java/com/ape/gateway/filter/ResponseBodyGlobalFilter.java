@@ -15,6 +15,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -50,23 +51,32 @@ public class ResponseBodyGlobalFilter implements GlobalFilter, Ordered {
                 if (body instanceof Flux) {
                     Flux<? extends DataBuffer> fluxBody = (Flux<? extends DataBuffer>) body;
                     return super.writeWith(fluxBody.buffer().map(dataBuffers -> {
-                        StringBuilder sb = new StringBuilder();
-                        dataBuffers.forEach(dataBuffer -> {
-                            byte[] content = new byte[dataBuffer.readableByteCount()];
-                            dataBuffer.read(content);
-                            // 释放掉内存
-                            DataBufferUtils.release(dataBuffer);
-                            // 读取的response分段内容
-                            String data = new String(content, Charset.forName("UTF-8"));
-                            sb.append(data);
-                        });
+                        //DefaultDataBufferFactory join 乱码的问题解决
+                        DataBufferFactory dataBufferFactory = new DefaultDataBufferFactory();
+                        DataBuffer join = dataBufferFactory.join(dataBuffers);
+                        byte[] content = new byte[join.readableByteCount()];
+                        join.read(content);
+                        //释放掉内存
+                        DataBufferUtils.release(join);
 
-                        if (!isJsonStr(sb.toString())){
-                            byte[] uppedContent = sb.toString().getBytes(Charset.forName("UTF-8"));
+//                        StringBuilder sb = new StringBuilder();
+//                        dataBuffers.forEach(dataBuffer -> {
+//                            byte[] content = new byte[dataBuffer.readableByteCount()];
+//                            dataBuffer.read(content);
+//                            // 释放掉内存
+//                            DataBufferUtils.release(dataBuffer);
+//                            // 读取的response分段内容
+//                            String data = new String(content, Charset.forName("UTF-8"));
+//                            sb.append(data);
+//                        });
+                        String sb = new String(content, Charset.forName("UTF-8"));
+
+                        if (!isJsonStr(sb)){
+                            byte[] uppedContent = sb.getBytes(Charset.forName("UTF-8"));
                             return bufferFactory.wrap(uppedContent);
                         }
 
-                        JSONObject jsonObject = JSONUtil.parseObj(sb.toString());
+                        JSONObject jsonObject = JSONUtil.parseObj(sb);
                         Boolean success = jsonObject.get("success", Boolean.class);
                         Boolean isEncrypt = jsonObject.get("encrypt", Boolean.class);
                         if (success && isEncrypt){
@@ -85,7 +95,6 @@ public class ResponseBodyGlobalFilter implements GlobalFilter, Ordered {
                                 httpResponse.getHeaders().set("sm2uuid", httpRequest.getHeaders().getFirst("sm2uuid"));
                             }
                         }
-                        System.out.println(jsonObject.toString());
                         byte[] uppedContent = jsonObject.toString().getBytes(Charset.forName("UTF-8"));
                         return bufferFactory.wrap(uppedContent);
                     }));
