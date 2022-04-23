@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * <p>
@@ -62,6 +63,18 @@ public class ArticleController {
     public ResultVO<ArticleDO> searchArticle(@ApiParam("文章ID") @PathVariable("id") String id){
         ArticleDO articleDO = articleService.getById(id);
         return ResultVO.OK(articleDO);
+    }
+
+    @ApiOperation(value = "根据用户ID和专题ID查询文章列表", notes = "根据用户ID和专题ID查询文章列表")
+    @GetMapping("/searchArticleList")
+    public ResultVO<List<ArticleDO>> searchArticleListByUidAndTid(@ApiParam("用户ID") @RequestParam("uid") String uid,
+                                                            @ApiParam("专题ID") @RequestParam("tid") String tid){
+        QueryWrapper<ArticleDO> wrapper = new QueryWrapper<>();
+        wrapper.select("id", "tid", "title", "summary", "gmt_created");
+        wrapper.eq("uid", uid).eq("tid", tid).eq("is_publish", false);
+        wrapper.orderByDesc("gmt_modified");
+        List<ArticleDO> articleDOList = articleService.list(wrapper);
+        return ResultVO.OK(articleDOList);
     }
 
     @ApiOperation(value = "删除文章", notes = "删除文章")

@@ -1,4 +1,4 @@
-package com.ape.common.utils;
+package com.ape.common.component;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

@@ -4,6 +4,7 @@ package com.ape.article.controller;
 import com.ape.article.model.ThemeDO;
 import com.ape.article.service.ThemeService;
 import com.ape.article.feign.OssServiceFeign;
+import com.ape.common.component.RequestContextWrapper;
 import com.ape.common.model.ResultVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
@@ -35,6 +36,8 @@ public class ThemeController {
     private ThemeService themeService;
     @Autowired
     private OssServiceFeign ossServiceFeign;
+    @Autowired
+    private RequestContextWrapper requestContextWrapper;
 
     @ApiOperation(value = "新建专题", notes = "新建专题")
     @PostMapping("/create")
@@ -62,9 +65,11 @@ public class ThemeController {
     @GetMapping("/searchAll/{uid}")
     public ResultVO<List<ThemeDO>> searchAllTheme(@ApiParam("用户ID") @PathVariable("uid") String uid){
         QueryWrapper<ThemeDO> wrapper = new QueryWrapper<>();
+        wrapper.select("id", "name", "description", "picture");
         wrapper.orderByAsc("gmt_created");
         wrapper.eq("uid", uid);
         List<ThemeDO> themeDOList = themeService.list(wrapper);
+        requestContextWrapper.readRequestUserInfo();
         return ResultVO.OK(themeDOList);
     }
 

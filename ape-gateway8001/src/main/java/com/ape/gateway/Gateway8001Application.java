@@ -1,5 +1,6 @@
 package com.ape.gateway;
 
+import com.ape.common.component.RequestContextWrapper;
 import com.ape.gateway.ignore.CustomScanFilter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,10 +28,13 @@ import java.util.List;
  */
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableEurekaClient
-@ComponentScan(basePackages = "com.ape", excludeFilters = @ComponentScan.Filter(
-        type = FilterType.CUSTOM,
-        classes = {CustomScanFilter.class}
-        ))
+@ComponentScan(basePackages = "com.ape", excludeFilters = {
+        @ComponentScan.Filter(
+                type = FilterType.CUSTOM,
+                classes = {CustomScanFilter.class}
+        ),
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {RequestContextWrapper.class})
+})
 public class Gateway8001Application {
     public static void main(String[] args) {
         SpringApplication.run(Gateway8001Application.class, args);

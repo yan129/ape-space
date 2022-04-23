@@ -1,5 +1,6 @@
 package com.ape.gateway.filter;
 
+import cn.hutool.core.net.URLEncoder;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.ape.common.model.ResponseCode;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
 /**
@@ -57,6 +59,8 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             }
 
             log.info("Authorization.filter() -- userInfo：{}", userInfo);
+            // 解决被保护的微服务获取header中文参数乱码问题
+            userInfo = URLEncoder.DEFAULT.encode(userInfo, StandardCharsets.UTF_8);
             ServerHttpRequest request = exchange.getRequest().mutate().header("userInfo", userInfo).build();
             exchange = exchange.mutate().request(request).build();
         } catch (ParseException e) {
