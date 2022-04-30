@@ -39,6 +39,16 @@ public class ThemeController {
     @Autowired
     private RequestContextWrapper requestContextWrapper;
 
+    @GetMapping("/test")
+    public String test(){
+        return "test";
+    }
+
+    @GetMapping("/AA")
+    public String testAA(){
+        return "test";
+    }
+
     @ApiOperation(value = "新建专题", notes = "新建专题")
     @PostMapping("/create")
     public ResultVO createTheme(@RequestBody @Valid ThemeDO themeDO){
@@ -69,7 +79,6 @@ public class ThemeController {
         wrapper.orderByAsc("gmt_created");
         wrapper.eq("uid", uid);
         List<ThemeDO> themeDOList = themeService.list(wrapper);
-        requestContextWrapper.readRequestUserInfo();
         return ResultVO.OK(themeDOList);
     }
 

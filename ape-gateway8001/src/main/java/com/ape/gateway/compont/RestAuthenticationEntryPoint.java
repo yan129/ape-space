@@ -49,6 +49,9 @@ public class RestAuthenticationEntryPoint implements ServerAuthenticationEntryPo
     public Mono<Void> commence(ServerWebExchange exchange, AuthenticationException e) {
         System.out.println(e);
         ServerHttpResponse response = exchange.getResponse();
+//        response.setStatusCode(HttpStatus.SEE_OTHER);
+//        response.getHeaders().set(HttpHeaders.LOCATION, "http://www.baidu.com");
+//        exchange.getResponse().setComplete();
         ResultVO<Object> error = ResultVO.ERROR();
         if (e instanceof InsufficientAuthenticationException){
             error.setData(ResponseCode.UNAUTHORIZED);

@@ -1,6 +1,7 @@
 package com.ape.user.controller;
 
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -97,12 +98,14 @@ public class UserController {
     @PostMapping("/oauth/token")
     public ResponseEntity<OAuth2AccessToken> customOauthLogin(Principal principal, HttpServletRequest request) throws HttpRequestMethodNotSupportedException {
         String loginType = request.getParameter("loginType");
-        Map<String, String> parameters;
+        Map<String, String> parameters = null;
 
         if (StringUtils.equals("sms", loginType)){
             parameters = this.buildSmsLoginMap(request);
-        }else {
+        }else if ((StringUtils.equals("captcha", loginType))){
             parameters = this.buildCaptchaLoginMap(request);
+        }else if ((StringUtils.equals("refresh", loginType))) {
+            parameters = this.buildRefreshTokenMap(request);
         }
 
         return tokenEndpoint.postAccessToken(principal, parameters);
@@ -128,6 +131,15 @@ public class UserController {
         parameters.put("scope", "all");
         parameters.put("username", request.getParameter("username"));
         parameters.put("smsCode", request.getParameter("smsCode"));
+        return parameters;
+    }
+
+    private Map<String, String> buildRefreshTokenMap(HttpServletRequest request){
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("grant_type", "refresh_token");
+        parameters.put("client_id", Base64.encode("ape"));
+        parameters.put("client_secret", Base64.encode("ape"));
+        parameters.put("refresh_token", request.getParameter("token"));
         return parameters;
     }
 
