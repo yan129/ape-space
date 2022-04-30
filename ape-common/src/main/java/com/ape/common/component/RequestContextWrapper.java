@@ -1,14 +1,17 @@
 package com.ape.common.component;
 
 import cn.hutool.core.net.URLDecoder;
+import cn.hutool.json.JSONUtil;
+import com.ape.common.model.UserInfoWrapper;
+import com.ape.common.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
 import java.util.Map;
 
 /**
@@ -23,19 +26,20 @@ public class RequestContextWrapper {
 
     private HttpServletRequest request = null;
 
-    public Object readHeaders(){
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String element = headerNames.nextElement();
-            System.out.println(element + "===========");
-        }
-        return null;
+    public HttpServletRequest getHttpServletRequest(){
+        return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     }
 
-    public Map<String, Object> readRequestUserInfo(){
-        request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    public Map<String, Object> readRequestArgs(){
+        request = this.getHttpServletRequest();
+        return CommonUtil.encapsulateRequestArgs(request);
+    }
+
+    public UserInfoWrapper readRequestUserInfo(){
+        request = this.getHttpServletRequest();
+        Assert.notNull(request.getHeader("userInfo"), "request header userInfo is null");
         String userInfo = URLDecoder.decode(request.getHeader("userInfo"), StandardCharsets.UTF_8);
-        log.info("userInfo = {}", userInfo);
-        return null;
+        UserInfoWrapper userInfoWrapper = JSONUtil.toBean(userInfo, UserInfoWrapper.class);
+        return userInfoWrapper;
     }
 }
