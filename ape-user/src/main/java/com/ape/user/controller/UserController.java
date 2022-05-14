@@ -1,13 +1,13 @@
 package com.ape.user.controller;
 
 
-import cn.hutool.core.codec.Base64;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.ape.common.annotation.ApiIdempotent;
 import com.ape.common.model.ResultVO;
 import com.ape.common.utils.StringUtils;
+import com.ape.common.utils.ThreadLocalHolder;
 import com.ape.user.feign.SmsServiceFeign;
 import com.ape.user.service.UserService;
 import com.ape.user.vo.LoginVO;
@@ -57,6 +57,8 @@ public class UserController {
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private TokenEndpoint tokenEndpoint;
+    @Autowired
+    private ThreadLocalHolder threadLocalHolder;
 
     @ApiOperation(value = "用户注册", notes = "用户注册")
     @PostMapping("/register")
@@ -99,23 +101,26 @@ public class UserController {
     public ResponseEntity<OAuth2AccessToken> customOauthLogin(Principal principal, HttpServletRequest request) throws HttpRequestMethodNotSupportedException {
         String loginType = request.getParameter("loginType");
         Map<String, String> parameters = null;
+        Map<String, Object> userInfoMap = null;
 
         if (StringUtils.equals("sms", loginType)){
             parameters = this.buildSmsLoginMap(request);
         }else if ((StringUtils.equals("captcha", loginType))){
             parameters = this.buildCaptchaLoginMap(request);
         }else if ((StringUtils.equals("refresh", loginType))) {
-            parameters = this.buildRefreshTokenMap(request);
+            userInfoMap = getUserInfo(request);
+            parameters = this.buildRefreshTokenMap(userInfoMap);
         }
 
-        return tokenEndpoint.postAccessToken(principal, parameters);
+        ResponseEntity<OAuth2AccessToken> entity = tokenEndpoint.postAccessToken(principal, parameters);
+        // 刷新token请求成功，删除旧的refresh_token
+        deleteOldRefreshToken(loginType, entity.getStatusCode().is2xxSuccessful(), userInfoMap);
+        return entity;
     }
 
     private Map<String, String> buildCaptchaLoginMap(HttpServletRequest request){
         Map<String, String> parameters = new HashMap<>();
         parameters.put("grant_type", "captcha");
-        parameters.put("client_id", "ape");
-        parameters.put("client_secret", "ape");
         parameters.put("scope", "all");
         parameters.put("username", request.getParameter("username"));
         parameters.put("password", request.getParameter("password"));
@@ -126,21 +131,46 @@ public class UserController {
     private Map<String, String> buildSmsLoginMap(HttpServletRequest request){
         Map<String, String> parameters = new HashMap<>();
         parameters.put("grant_type", "sms");
-        parameters.put("client_id", "ape");
-        parameters.put("client_secret", "ape");
         parameters.put("scope", "all");
         parameters.put("username", request.getParameter("username"));
         parameters.put("smsCode", request.getParameter("smsCode"));
         return parameters;
     }
 
-    private Map<String, String> buildRefreshTokenMap(HttpServletRequest request){
+    private Map<String, String> buildRefreshTokenMap(Map<String, Object> userInfoMap){
         Map<String, String> parameters = new HashMap<>();
         parameters.put("grant_type", "refresh_token");
-        parameters.put("client_id", Base64.encode("ape"));
-        parameters.put("client_secret", Base64.encode("ape"));
-        parameters.put("refresh_token", request.getParameter("token"));
+        parameters.put("scope", "all");
+        setRefreshToken(parameters, userInfoMap);
         return parameters;
+    }
+
+    private Map<String, Object> getUserInfo(HttpServletRequest request) {
+        try {
+            String realToken = request.getParameter("token");
+            JWSObject jwsObject = JWSObject.parse(realToken);
+            String userInfo = jwsObject.getPayload().toString();
+            return JSONUtil.toBean(userInfo, Map.class);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            log.error("UserController parse token error: {}", e.getMessage());
+        }
+        return null;
+    }
+
+    private void setRefreshToken(Map<String, String> parameters, Map<String, Object> userInfoMap) {
+        String jti = (String) userInfoMap.get("jti");
+        String cacheRefreshToken = stringRedisTemplate.opsForValue().get("refreshToken:" + jti);
+        parameters.put("refresh_token", cacheRefreshToken);
+        threadLocalHolder.set(cacheRefreshToken);
+    }
+
+    private void deleteOldRefreshToken(String loginType, Boolean is2xxSuccessful, Map<String, Object> userInfoMap) {
+        if (StringUtils.equals("refresh", loginType)) {
+            if (is2xxSuccessful) {
+                stringRedisTemplate.delete("refreshToken:" + userInfoMap.get("jti"));
+            }
+        }
     }
 
     @ApiOperation(value = "退出登录", notes = "退出登录")

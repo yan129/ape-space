@@ -24,19 +24,19 @@ import java.util.Map;
 @Component
 public class RequestContextWrapper {
 
-    private HttpServletRequest request = null;
+    private static HttpServletRequest request = null;
 
-    public HttpServletRequest getHttpServletRequest(){
+    public static HttpServletRequest getHttpServletRequest(){
         return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     }
 
-    public Map<String, Object> readRequestArgs(){
-        request = this.getHttpServletRequest();
+    public static Map<String, Object> readRequestArgs(){
+        request = getHttpServletRequest();
         return CommonUtil.encapsulateRequestArgs(request);
     }
 
-    public UserInfoWrapper readRequestUserInfo(){
-        request = this.getHttpServletRequest();
+    public static UserInfoWrapper readRequestUserInfo(){
+        request = getHttpServletRequest();
         Assert.notNull(request.getHeader("userInfo"), "request header userInfo is null");
         String userInfo = URLDecoder.decode(request.getHeader("userInfo"), StandardCharsets.UTF_8);
         UserInfoWrapper userInfoWrapper = JSONUtil.toBean(userInfo, UserInfoWrapper.class);

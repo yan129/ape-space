@@ -2,10 +2,14 @@ package com.ape.user.service.impl;
 
 import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.json.JSONUtil;
+import com.ape.common.component.RequestContextWrapper;
 import com.ape.common.exception.ServiceException;
 import com.ape.common.model.ResponseCode;
+import com.ape.common.model.UserInfoWrapper;
 import com.ape.common.utils.CaptchaUtil;
 import com.ape.common.utils.StringUtils;
+import com.ape.common.utils.ThreadLocalHolder;
 import com.ape.user.bo.UserBO;
 import com.ape.user.mapper.RoleMapper;
 import com.ape.user.mapper.UserRoleMapper;
@@ -21,6 +25,7 @@ import com.ape.user.vo.LoginVO;
 import com.ape.user.vo.RegisterVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.nimbusds.jose.JWSObject;
 import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.model.AuthUser;
 import org.hibernate.validator.internal.util.CollectionHelper;
@@ -42,6 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -69,6 +75,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private SocialUserDetailService socialUserDetailService;
+    @Autowired
+    private ThreadLocalHolder threadLocalHolder;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -78,6 +86,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 //            throw new UsernameNotFoundException(ResponseCode.USERNAME_NOT_EXIST.getMsg());
 //        }
         UserDO searchUser = searchUserByUsername(username);
+        // 如果userDo为空，并且是刷新token请求，执行该if
+        if (StringUtils.isEmpty(searchUser)) {
+            searchUser = this.searchUserById();
+        }
+
         // 账号不存在
         if (StringUtils.isEmpty(searchUser)){
             throw new UsernameNotFoundException(ResponseCode.USERNAME_NOT_EXIST.getMsg());
@@ -122,6 +135,30 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         }
         QueryWrapper<UserDO> wrapper = new QueryWrapper<UserDO>().eq("username", username.trim());
         return this.baseMapper.selectOne(wrapper);
+    }
+
+    /**
+     * 获取解析 /user/oauth/token 请求的用户数据
+     * @return
+     */
+    private UserDO searchUserById(){
+        Map<String, Object> requestMap = RequestContextWrapper.readRequestArgs();
+        if (StringUtils.equals("refresh", (String) requestMap.get("loginType"))) {
+            try {
+                JWSObject jwsObject = JWSObject.parse(((String) threadLocalHolder.get()));
+                String userInfo = jwsObject.getPayload().toString();
+                UserInfoWrapper userInfoWrapper = JSONUtil.toBean(userInfo, UserInfoWrapper.class);
+                String id = userInfoWrapper.getUserInfo().getId();
+                QueryWrapper<UserDO> wrapper = new QueryWrapper<UserDO>().eq("id", id);
+                return this.baseMapper.selectOne(wrapper);
+            } catch (ParseException e) {
+                log.error("refresh_token parse exception: {}", e.getMessage());
+                throw new ServiceException("token解析失败");
+            }finally {
+                threadLocalHolder.remove();
+            }
+        }
+        return null;
     }
 
     /**
