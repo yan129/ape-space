@@ -18,7 +18,7 @@ import java.util.Date;
 public class BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "ID")
-    @TableId(value = "id", type = IdType.ASSIGN_UUID)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private String id;
 
     @ApiModelProperty(value = "逻辑删除 1（true）已删除， 0（false）未删除")

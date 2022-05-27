@@ -43,7 +43,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String token = exchange.getRequest().getHeaders().getFirst(AuthConstant.JWT_TOKEN_HEADER);
         // exchange.getRequest().getURI().getRawPath().contains("/oauth/token") 解决password模式登录时，由于存在Basic头部，防止下面代码去解释jwt报错
-        if (StringUtils.isBlank(token) || exchange.getRequest().getURI().getRawPath().contains("/oauth/token")){
+        if (StringUtils.isBlank(token) || exchange.getRequest().getURI().getRawPath().contains("/user/oauth/token")){
             // 请求登录接口时，设置上basic认证
             ServerHttpRequest request = exchange.getRequest().mutate().header(AuthConstant.JWT_TOKEN_HEADER, "Basic " + Base64.encode("ape:ape")).build();
             exchange = exchange.mutate().request(request).build();
