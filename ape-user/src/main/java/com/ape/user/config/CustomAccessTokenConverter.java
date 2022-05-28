@@ -37,6 +37,7 @@ public class CustomAccessTokenConverter extends DefaultAccessTokenConverter {
 
             Map<String, Object> userInfo = new HashMap<>();
             userInfo.put("id", userBO.getId());
+            userInfo.put("unionId", userBO.getUnionId());
             userInfo.put("nickname", userBO.getNickname());
             userInfo.put("avatar", userBO.getAvatar());
             userInfo.put("remark", userBO.getRemark());

@@ -31,6 +31,9 @@ public class UserDO extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "用户unionId")
+    private Long unionId;
+
     @ApiModelProperty(value = "昵称")
     private String nickname;
 

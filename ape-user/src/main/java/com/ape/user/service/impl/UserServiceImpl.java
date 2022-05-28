@@ -1,5 +1,6 @@
 package com.ape.user.service.impl;
 
+import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
@@ -77,6 +78,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     private SocialUserDetailService socialUserDetailService;
     @Autowired
     private ThreadLocalHolder threadLocalHolder;
+    @Autowired
+    private Snowflake snowflake;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -178,6 +181,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         String password = passwordEncoder.encode(loginVO.getPassword().trim());
 
         UserDO userDO = new UserDO();
+        userDO.setUnionId(snowflake.nextId());
         userDO.setNickname(nickname);
         userDO.setUsername(loginVO.getUsername().trim());
         userDO.setPassword(password);
@@ -217,6 +221,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     @Transactional(rollbackFor = Exception.class)
     public UserDO registerSocialUser(AuthUser authUser) {
         UserDO userDO = new UserDO();
+        userDO.setUnionId(snowflake.nextId());
         userDO.setUsername(authUser.getUuid());
         userDO.setNickname(authUser.getUsername());
         userDO.setPassword(passwordEncoder.encode(ACCOUNT_DEFAULT_PASSWORD));
