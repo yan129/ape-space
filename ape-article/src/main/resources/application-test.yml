@@ -24,13 +24,14 @@ spring:
         enabled: false
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://47.115.125.76:3306/ape-article?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
+    url: ENC(W3FdddGniotH40IVPq68o+sAcRMj547sc1TXuy2xDOexoGN9Bsk/vJfBUk0jpHRTLxzXOeXXZv9eTmQx2n+hGwCln2FSKgxP3iL4aN9Is5NrSN6X4sCOb7SXeea7ueNOU96dtWdI9Qh48Xeb+Gndekn1vf+VBrMbBGXCFrAoTwujLo35HBjX1V7ow++DkHwlk0KGrHvolWLyjeE4vETLMg==)
+    username: ENC(nAsvLn55xWCkq9qkv6cV9bsKq0GmnUydXyg3AmhCVyvZK/tZrVI1cwgcHBkqFJuS)
+    password: ENC(RUjgGFVXi9y7T5v/x8U51fq7fBMXUh645Uenf+FhPHMnUU+uSZ5xXzKUwZr4i4Fh)
   # redis配置
   redis:
-    host: 47.115.125.76
+    host: ENC(aOtY1Fk+CwQfXMOokhOnljjoovZN8F03FCHmeGcdk7F1In7GAYf5+VhHeT0p6Yud)
     port: 6379
+    password: ENC(n/0EmazbURtBPOkmeRxWX5wQqFm13bBY73jkydTMaNDW5AuQmDSjMHyAD8uMQVdq)
     database: 0
     lettuce:
       pool:

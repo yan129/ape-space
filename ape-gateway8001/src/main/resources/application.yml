@@ -18,8 +18,9 @@ spring:
     name: ape-gateway8001
   # redis配置
   redis:
-    host: 47.115.125.76
+    host: ENC(G4MK1HiE6+zgC/Rr34H+R6KT4J3pfpyTURRYEp5rLkJgoeP2iXPIVIsYCGdlQIXS)
     port: 6379
+    password: ENC(BIYU1lwpTm2K2nxU498+Ob2QJIkgnAebFpegs6I5mzYaQZ5Km/mqCgTnA9TsbIxa)
     database: 0
     lettuce:
       pool:

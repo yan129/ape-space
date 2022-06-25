@@ -7,8 +7,9 @@ spring:
   application:
     name: sms-service
   redis:
-    host: 47.115.125.76
+    host: ENC(aOtY1Fk+CwQfXMOokhOnljjoovZN8F03FCHmeGcdk7F1In7GAYf5+VhHeT0p6Yud)
     port: 6379
+    password: ENC(n/0EmazbURtBPOkmeRxWX5wQqFm13bBY73jkydTMaNDW5AuQmDSjMHyAD8uMQVdq)
     database: 0
     lettuce:
       pool:
