@@ -1,5 +1,5 @@
 // Gitee的token凭证
-def gitee_auth = "534edba8f682ec4968c5d4840aa0eaff"
+def gitee_auth = "9d4f0e293be28fe72236617b265ddaee"
 // 构建的版本
 def tag = "1.0.0"
 def git_url = "git@gitee.com:yan129/ape-space.git"
@@ -45,7 +45,7 @@ node{
             def currentProjectPort = currentProject.split('@')[1]
 
             def imageName = "${currentProjectName}:${tag}"
-            sh "docker run --restart=always -d --name ${currentProjectName} -p ${currentProjectPort}:${currentProjectPort} ${imageName}"
+            sh "docker run --restart=always -d --name ${currentProjectName} -e JASYPT_PASSWORD="${JASYPT_PASSWORD}" -p ${currentProjectPort}:${currentProjectPort} ${imageName}"
             sh "docker logs ${currentProjectName}"
         }
     }

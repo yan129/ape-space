@@ -95,6 +95,7 @@ CREATE TABLE `follow`(
 DROP TABLE IF EXISTS `sys_user`;
 CREATE TABLE `sys_user`(
     `id` CHAR(32) NOT NULL COMMENT '用户ID',
+    `union_id` CHAR(32) NOT NULL COMMENT '用户unionId',
     `nickname` VARCHAR(32) DEFAULT NULL COMMENT '昵称',
     `username` VARCHAR(32) NOT NULL COMMENT '用户名',
     `password` VARCHAR(255) NOT NULL COMMENT '密码',
@@ -107,6 +108,7 @@ CREATE TABLE `sys_user`(
     `account_not_locked` TINYINT(1) DEFAULT '1' COMMENT '账号是否锁定，默认 1 为不锁定，0 为锁定',
     `credentials_not_expired` TINYINT(1) DEFAULT '1' COMMENT '证书（密码）是否过期，默认 1 为不过期，0 为过期',
     `last_login_time` DATETIME DEFAULT NULL COMMENT '上一次登录时间',
+    `theme_color` VARCHAR(16) DEFAULT NULL COMMENT '主题颜色',
     `is_deleted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除 1（true）已删除， 0（false）未删除',
     `gmt_created` DATETIME NOT NULL COMMENT '创建时间',
     `gmt_modified` DATETIME NOT NULL COMMENT '更新时间',
@@ -193,27 +195,20 @@ CREATE TABLE `sys_menu`(
 
 -- 第三方用户登录表
 DROP TABLE IF EXISTS `sys_social_user_detail`;
-CREATE TABLE `sys_social_user_detail`(
-    `uuid` CHAR(32) NOT NULL COMMENT '用户唯一ID',
-    `username` VARCHAR(32) DEFAULT NULL COMMENT '用户名',
-    `nickname` VARCHAR(32) DEFAULT NULL COMMENT '昵称',
-    `phone_number` VARCHAR(32) DEFAULT NULL COMMENT '手机号绑定',
-    `avatar` VARCHAR(255) DEFAULT NULL COMMENT '头像',
-    `gender` CHAR(1) DEFAULT NULL COMMENT '性别，默认 1 为男，0 为女，-1为未知',
-    `remark` VARCHAR(64) DEFAULT NULL COMMENT '个性签名',
-    `source` VARCHAR(32) DEFAULT NULL COMMENT '平台来源',
-    `access_token` VARCHAR(512) DEFAULT NULL COMMENT 'token令牌',
-    `expire_in` INT(10) DEFAULT NULL COMMENT 'token令牌过期时间，单位秒',
-    `refresh_token` VARCHAR(512) DEFAULT NULL COMMENT 'refresh_token刷新',
-    `refresh_token_expire_in` INT(10) DEFAULT NULL COMMENT 'token令牌过期时间，0不过期，单位秒',
-    `token_type` VARCHAR(16) DEFAULT NULL COMMENT 'token令牌类型',
-    `last_login_time` DATETIME DEFAULT NULL COMMENT '上一次登录时间',
-    `is_deleted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' COMMENT '逻辑删除 1（true）已删除， 0（false）未删除',
-    `gmt_created` DATETIME NOT NULL COMMENT '创建时间',
-    `gmt_modified` DATETIME NOT NULL COMMENT '更新时间',
-    PRIMARY KEY (`uuid`),
-    KEY `idx_username` (`username`)
-)ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='第三方登录用户表';
+CREATE TABLE `sys_social_user_detail` (
+  `id` char(32) COLLATE utf8mb4_general_ci NOT NULL COMMENT '主键',
+  `uuid` char(32) COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户唯一ID',
+  `source` varchar(32) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '平台来源',
+  `access_token` varchar(512) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'token令牌',
+  `expire_in` int DEFAULT NULL COMMENT 'token令牌过期时间，单位秒',
+  `refresh_token` varchar(512) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'refresh_token刷新',
+  `refresh_token_expire_in` int DEFAULT NULL COMMENT 'token令牌过期时间，0不过期，单位秒',
+  `token_type` varchar(16) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'token令牌类型',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '逻辑删除 1（true）已删除， 0（false）未删除',
+  `gmt_created` datetime NOT NULL COMMENT '创建时间',
+  `gmt_modified` datetime NOT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='第三方登录用户表';
 
 -- 客户端信息表oauth_client_details
 CREATE TABLE `oauth_client_details`  (
