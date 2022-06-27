@@ -30,7 +30,7 @@ node{
             def imageName = "${currentProjectName}:${tag}"
 
             echo "====开始${currentProjectName}模块编译构建镜像===="
-            sh "mvn -f ${currentProjectName} clean package dockerfile:build -Ddockerfile.buildArgs.JASYPT_PASSWORD=${JASYPT_PASSWORD}"
+            sh "mvn -f ${currentProjectName} clean package dockerfile:build"
             // sh "docker tag ${imageName} ape-space/${imageName}"
             echo "====结束${currentProjectName}模块编译构建镜像===="
         }
@@ -45,7 +45,7 @@ node{
             def currentProjectPort = currentProject.split('@')[1]
 
             def imageName = "${currentProjectName}:${tag}"
-            sh "docker run --restart=always -d --name ${currentProjectName} -p ${currentProjectPort}:${currentProjectPort} ${imageName}"
+            sh "docker run --restart=always -d -e JASYPT_PASSWORD=${JASYPT_PASSWORD} --name ${currentProjectName} -p ${currentProjectPort}:${currentProjectPort} ${imageName}"
             sh "docker logs ${currentProjectName}"
         }
     }
