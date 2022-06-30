@@ -45,7 +45,7 @@ node{
             def currentProjectPort = currentProject.split('@')[1]
 
             def imageName = "${currentProjectName}:${tag}"
-            sh "docker run --restart=always -d -e JASYPT_PASSWORD=${JASYPT_PASSWORD} --name ${currentProjectName} -p ${currentProjectPort}:${currentProjectPort} ${imageName}"
+            sh "docker run --restart=always -d -e JASYPT_PASSWORD='${JASYPT_PASSWORD}' --name ${currentProjectName} -p ${currentProjectPort}:${currentProjectPort} ${imageName}"
             sh "docker logs ${currentProjectName}"
         }
     }
