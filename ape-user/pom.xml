@@ -12,9 +12,9 @@
     <artifactId>ape-user</artifactId>
     <description>用户微服务</description>
 
-    <properties>
-        <JASYPT_PASSWORD></JASYPT_PASSWORD>
-    </properties>
+<!--    <properties>-->
+<!--        <JASYPT_PASSWORD></JASYPT_PASSWORD>-->
+<!--    </properties>-->
 
     <dependencies>
         <dependency>
