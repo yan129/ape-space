@@ -31,7 +31,7 @@
     <description>Ape Space For Spring Boot Application</description>
 
     <properties>
-        <JASYPT_PASSWORD></JASYPT_PASSWORD>
+        <jasyptPassword></jasyptPassword>
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>

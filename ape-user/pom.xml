@@ -63,7 +63,7 @@
                     <tag>1.0.0</tag>
                     <buildArgs>
                         <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
-                        <JASYPT_PASSWORD>${JASYPT_PASSWORD}</JASYPT_PASSWORD>
+                        <JASYPT_PASSWORD>${jasyptPassword}</JASYPT_PASSWORD>
                     </buildArgs>
                 </configuration>
             </plugin>

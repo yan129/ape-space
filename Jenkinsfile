@@ -31,7 +31,7 @@ node{
 
             echo "====开始${currentProjectName}模块编译构建镜像===="
             // -Dmaven.test.skip=false -Dmaven.test.failure.ignore=true
-            sh "mvn -f ${currentProjectName} clean package dockerfile:build -DJASYPT_PASSWORD=${JASYPT_PASSWORD}"
+            sh "mvn -f ${currentProjectName} clean package -DjasyptPassword=${JASYPT_PASSWORD} dockerfile:build -Dmaven.test.skip=false -Dmaven.test.failure.ignore=true"
             // sh "docker tag ${imageName} ape-space/${imageName}"
             echo "====结束${currentProjectName}模块编译构建镜像===="
         }
