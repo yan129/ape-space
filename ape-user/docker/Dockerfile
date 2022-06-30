@@ -5,4 +5,4 @@ ENV jasyptPassword=${JASYPT_PASSWORD}
 COPY ${JAR_FILE} ape-user9526.jar
 RUN echo "${JASYPT_PASSWORD} ====="
 EXPOSE 9526
-ENTRYPOINT ["/bin/bash", "-c", "java", "-Djasypt.encryptor.password=$jasyptPassword", "-jar", "/ape-user9526.jar"]
+ENTRYPOINT ["/bin/sh", "-c", "java", "-Djasypt.encryptor.password=$jasyptPassword", "-jar", "/ape-user9526.jar"]
