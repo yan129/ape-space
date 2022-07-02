@@ -4,7 +4,11 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.ape.user.model.SocialUserDetailDO">
-        <id column="uuid" property="uuid" />
+        <id column="id" property="id" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="gmt_created" property="gmtCreated" />
+        <result column="gmt_modified" property="gmtModified" />
+        <result column="uuid" property="uuid" />
         <result column="source" property="source" />
         <result column="access_token" property="accessToken" />
         <result column="expire_in" property="expireIn" />

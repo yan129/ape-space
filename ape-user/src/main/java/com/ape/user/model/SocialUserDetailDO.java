@@ -1,15 +1,11 @@
 package com.ape.user.model;
 
+import com.ape.common.model.BaseEntity;
 import com.baomidou.mybatisplus.annotation.*;
 
-import java.io.Serializable;
-import java.util.Date;
-
-import com.ape.common.model.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
@@ -24,12 +20,11 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("sys_social_user_detail")
 @ApiModel(value="SocialUserDetailDO对象", description="第三方登录用户表")
-public class SocialUserDetailDO implements Serializable {
+public class SocialUserDetailDO extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "用户唯一ID")
-    @TableId(value = "uuid", type = IdType.INPUT)
     private String uuid;
 
     @ApiModelProperty(value = "平台来源")
